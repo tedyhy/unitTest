@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ajax</title>
+    <link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+    <script src="../js/base.js"></script>
+    <script src="../codemirror/lib/codemirror.js"></script>
+    <script src="../codemirror/mode/javascript/javascript.js"></script>
+    <style type="text/css">
+    .CodeMirror {
+        height: auto;
+    }
+    </style>
+</head>
+
+<body>
+    <script>
+    // text
+    // var xhr = XHR();
+    // xhr.open('GET', 'http://127.0.0.1:82/model/ajax1.json', true); // 异步true，同步false
+    // xhr.send(null);
+    // xhr.onreadystatechange = function() {
+    //     // console.log(xhr.readyState, xhr.status)
+    //     if (xhr.readyState === 4 && xhr.status === 200) {
+    //         console.log(xhr)
+    //         console.log(xhr.responseXML);
+    //         // console.log(xhr.responseText);
+    //         // console.log(xhr.getAllResponseHeaders())
+    //         // console.log(xhr.getResponseHeader('Content-Type'))
+    //         /*
+				// Date: Wed, 29 Apr 2015 05:41:03 GMT
+				// Last-Modified: Wed, 29 Apr 2015 05:29:34 GMT
+				// Server: Apache/2.2.21 (Win32) PHP/5.3.10
+				// Accept-Ranges: bytes
+				// ETag: "24aa50a0-d-514d643a50b80"
+				// Content-Length: 13
+				// Content-Type: application/json
+    //         */
+    //     };
+    // };
+
+    // xml
+    // var xhr = XHR();
+    // xhr.open('GET', 'http://127.0.0.1:82/model/ajax2.xml', true);
+    // xhr.send(null);
+    // xhr.onreadystatechange = function() {
+    //     if (xhr.readyState === 4 && xhr.status === 200) {
+    //         console.log(xhr)
+    //         console.log(xhr.responseXML);
+    //     };
+    // };
+
+    // adjust respone type
+    var xhr = XHR();
+    xhr.open('GET', 'http://127.0.0.1:82/model/ajax2.xml', true);
+    xhr.send(null);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.getResponseHeader('Content-Type')) // application/xml
+            var type = xhr.getResponseHeader('Content-Type');
+            if (/xml/.test(type)) {
+            	console.log(xhr.responseXML); // document节点
+            } else if (type === 'application/json') {
+            	console.log(JSON.parse(xhr.responseText))
+            } else console.log(xhr.responseText);
+        };
+    };
+
+    // 同步获取text
+    // var xhr = XHR();
+    // xhr.open('GET', 'http://127.0.0.1:82/model/ajax3.text', false);
+    // xhr.send(null);
+    // if (xhr.status !== 200 || xhr.statusText !== 'OK') {
+    // 	throw new Error(xhr.statusText);
+    // };
+    // var type = xhr.getResponseHeader('Content-Type'); // Content-Type:text/plain
+    // if (!/^text/.test(type))
+    // 	throw new Error('Expected textual response; got: ' + type);
+
+    // console.log(xhr.responseText)
+
+
+    // POST请求，修改请求头
+	// var xhr = XHR();
+ //    xhr.open('POST', 'http://127.0.0.1:82/model/ajax3.text', true);
+ //    xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8'); // 注意顺序位置，此方法必须在open、send之间，否则抛出异常。
+ //    xhr.send({a:1, b:2});
+ //    xhr.onreadystatechange = function(){
+ //    	if (xhr.readyState === 4 && xhr.status === 200) {
+ //    		console.log(xhr)
+ //    		console.log(xhr.responseText)
+ //    		console.log(xhr.responseType)
+ //    	};
+ //    };
+
+
+
+
+    </script>
+</body>
+
+</html>
