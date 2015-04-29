@@ -17,6 +17,7 @@
 </head>
 
 <body>
+<h1>Ajax</h1>
 <p>关键词：HTTP|Ajax|Comet||Iframe|JSONP|XMLHttpRequest|CORS(Cross-Origin Resource Sharing)</p>
 <p>
 	使用XMLHttpRequest：
@@ -98,9 +99,37 @@ function timedGetText(url, timeout, callback) {
 	利用script元素实现JSONP：
 <textarea class="codemirror">这种使用&lt;script&gt;元素作为Ajax传输的技术被称为JSONP。若HTTP请求得到的响应数据是经过JSON编码的，则适合使用该技术。P代表“填充”或“前缀”。
 当通过&lt;script&gt;元素调用数据时，响应内容必须用Javascript函数名和圆括号包裹起来。如：JSONP123([1, 2, {"b": 1}]);
-//html编码表：http://www.jb51.net/onlineread/htmlchar.htm</textarea>
-</p>
+//html编码表：http://www.jb51.net/onlineread/htmlchar.htm
+// 使用script元素发送JSONP请求
+function getJSONP(url, callback) {
+	var cbnum = "cb" + getJSONP.counter++, // callback num
+		cbname = "getJSONP." + cbnum, // callback name
+		script;
 
+	if (url.indexOf('?') === -1)
+		url += '?jsonp=' + cbname;
+	else
+		url += '&jsonp=' + cbname;
+
+	script = document.createElement('script');
+	getJSONP[cbnum] = function(res) {
+		try {
+			callback(res);
+		} finally {
+			delete getJSONP[cbnum];
+			script.parentNode.removeChild(script);
+		};
+	};
+
+	script.src = url;
+	document.body.appendChild(script);
+};
+getJSONP.counter = 0;
+
+getJSONP('http://127.0.0.1:81/jsonp.json', function(res) {
+	console.log(JSON.stringify(res))
+});</textarea>
+</p>
 
 
 

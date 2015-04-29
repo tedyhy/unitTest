@@ -50,3 +50,33 @@ function timedGetText(url, timeout, callback) {
 	};
 	xhr.send(null);
 }
+
+// 使用script元素发送JSONP请求
+function getJSONP(url, callback) {
+	var cbnum = "cb" + getJSONP.counter++, // callback num
+		cbname = "getJSONP." + cbnum, // callback name
+		script;
+
+	if (url.indexOf('?') === -1)
+		url += '?jsonp=' + cbname;
+	else
+		url += '&jsonp=' + cbname;
+
+	script = document.createElement('script');
+	getJSONP[cbnum] = function(res) {
+		try {
+			callback(res);
+		} finally {
+			delete getJSONP[cbnum];
+			script.parentNode.removeChild(script);
+		};
+	};
+
+	script.src = url;
+	document.body.appendChild(script);
+};
+getJSONP.counter = 0;
+
+getJSONP('http://127.0.0.1:81/jsonp.json', function(res) {
+	console.log(JSON.stringify(res))
+});
