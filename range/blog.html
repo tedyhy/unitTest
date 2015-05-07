@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Range</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../js/base.js"></script>
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>Range</h1>
+<p>关键词：range</p>
+<p>
+<textarea class="codemirror">var range = document.createRange();
+
+var selection = window.getSelection();
+var selection = document.getSelection();
+
+var range = selection.getRangeAt(0);
+
+if (selection.rangeCount > 0) {
+	return selection.getRangeAt(0);
+};
+
+
+range.
+	collapsed	true/false
+	commonAncestorContainer
+	startContainer
+	endContainer
+	startOffset
+	endOffset
+
+
+range.selectNode();
+range.selectNodeContents();
+range.deleteContents();
+
+range.setStart(node, start);
+range.setEnd(node, end);
+
+
+function deleteChar() {
+	var div = document.getElementById('DIV'),
+		textnode = div.firstChild,
+		range = document.createRange();
+	range.setStart(textnode, 2);
+	range.setEnd(textnode, 10);
+	range.deleteContents();
+}</textarea>
+</p>
+
+	<script>
+		// js
+		var codemirrors = $$('codemirror');
+		if (codemirrors.length) {
+			for (var i = 0, l = codemirrors.length; i < l; i++) {
+				CodeMirror.fromTextArea(codemirrors[i], {
+					lineNumbers: true,
+					mode: "javascript"
+				});
+			};
+		};
+	</script>
+</body>
+
+</html>
