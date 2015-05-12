@@ -22,7 +22,12 @@
 <p>
 	数组概念：
 <textarea class="codemirror">
-稀疏数组：包含undefined值得数组。
+稀疏数组：包含从0开始的不连续索引的数组。如果是稀疏数组，则length值大于元素的个数。如：
+var arr = new Array(10);
+var arr2 = [];
+arr3[1000] = 1;
+
+// delete操作也可以产生稀疏数组。
 </textarea>
 </p>
 <p>
