@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Array</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../js/base.js"></script>
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>Array</h1>
+<p>关键词：Array</p>
+<p>
+	数组概念：
+<textarea class="codemirror">
+稀疏数组：包含undefined值得数组。
+</textarea>
+</p>
+<p>
+	数组遍历优化：
+<textarea class="codemirror">
+for(var i = 0; i < arr.length; i++) {
+	console.log(arr[i]);
+}
+// 在嵌套循环或其他性能要求比较高的上下文中，这种基本的遍历需要优化。
+// 数组长度应该只查询一次，而非每次循环都要查询一次。
+for(var i = 0, len = arr.length; i < len; i++) {
+	console.log(arr[i]);
+}
+</textarea>
+</p>
+<p>
+<textarea class="codemirror">
+// for/in 能枚举继承来得属性，如添加到Array.prototype中得属性。
+// 因此数组上不应该使用for/in来遍历，除非使用额外的检测方法来过滤不想要的属性。
+for (var i in arr) {
+	if (!arr.hasOwnProperty(i)) continue;
+}
+
+// ECMAScript允许for/in遍历以不同的顺序遍历对象的属性。因此，如果算法依赖数组元素顺序时，
+// 不要以for/in来遍历，最好用for循环。
+</textarea>
+</p>
+<p>
+	数组方法：
+<textarea class="codemirror">
+/* ECMAScript3中数组方法 */
+// 1.join、split
+var arr = [1,2,3];
+var str = arr.join(',');
+var arr2 = str.split(',');
+// 2.reverse
+var arr = [1,2,3];
+arr.reverse(); // 反向排序，改变原数组
+// 3.sort
+var arr = ["d", "b", "a"];
+arr.sort(); // 排序，默认按字母表排序，改变原数组。传递匿名函数，进行比较。
+// 4.concat
+var arr = [1,2,3];
+arr.concat(4); // 数组联合。不会递归扁平化数组。
+arr.concat(4,5); // [1,2,3,4,5]
+arr.concat([4,5]); // [1,2,3,4,5]
+arr.concat([4,5], [6,7]); // [1,2,3,4,5,6,7]
+arr.concat(4, [5, [6,7]]); // [1,2,3,4,5,[6,7]]
+// 5.slice 返回数组的一个片段或子数组。
+var arr = [1,2,3,4,5];
+arr.slice(1,3); // [2,3]
+arr.slice(3); // [4,5]
+arr.slice(2, -1); // [3,4]
+arr.slice(-3, -1); // [3,4]
+// 6.splice 向数组删除、插入，改变原数组。
+var arr = [1,2,3,4,5,6,7,8];
+arr.splice(3); // [1,2,3]
+arr.splice(3, 2); // [1,2,3,6,7,8]
+arr.splice(3, 2, ["a", "b"], "c"); // [1,2,3,["a","b"],"c",6,7,8]
+// 7.push、pop
+// 8.shift、unshift
+// 9.toString、toLocalString
+var arr = [1,2,3];
+arr.toString(); // '1,2,3' 默认逗号分隔
+var arr = [1,["a", "b"]]; // '1, "a", "b"'
+
+/* ECMAScript5中数组方法 */
+// 1.forEach
+var arr = [1,2,3];
+arr.forEach(function(v, i, a){ // 参数依次是：当前值、当前索引、数组
+	console.log(v);
+});
+// 2.map
+var arr = [1,2,3];
+var b = arr.map(function(v, i, a){
+	return v*2;
+}); // [2,4,6]
+// 3.filter
+var arr = [1,2,3,4];
+var b = arr.filter(function(v, i, a){
+	return v < 3;
+}); // [1,2]
+// 4.every（针对所有）、some（存在）
+var arr = [1,2,3,4,5,6];
+arr.every(function(v, i, a){
+	return v < 10;
+}); // true 所有值都小于10
+arr.every(function(v, i, a){
+	return v%2===0;
+}); // false 不是所有值都是偶数
+arr.some(function(v, i, a){
+	return v > 10;
+}); // false 木有大于10的值
+arr.some(function(v, i, a){
+	return v%2===0;
+}); // true 只要有偶数值
+// 5.reduce、reduceRight
+// 6. indexOf、lastIndexOf
+var arr = [6,1,2,3,4,1,0];
+arr.indexOf(1); // 1
+arr.lastIndexOf(1); // 5
+arr.indexOf(7); // -1
+arr.indexOf(1, 1); // 1 第一个参数是要查找的值，第二个参数是起始索引
+arr.indexOf(1, 2); // 5
+// Array.isArray() 判断是否是数组
+Array.isArray([]); // true
+Array.isArray({}); // false
+// ECMAScript3中判断是否是数组可以这样：
+1)
+[] instanceof Array
+{} instanceof Array
+2)
+var isArray = Function.isArray || function(o){
+	return typeof o === 'object' && Object.prototype.toString.call(o) === '[object Array]';
+};
+</textarea>
+</p>
+<p>
+	类数组对象：
+<textarea class="codemirror">
+// 数组与其他对象的区别
+// 1.当有新的元素添加到列表时，自动更新length属性。
+// 2.设置length为一个较小值将截断数组。
+// 3.从 Array.prototype 中继承一些有用的方法。
+// 4.其类属性为"Array"。
+var a = {"0": "a", "1": "b", "2": "c", length: 3};
+</textarea>
+</p>
+
+	<script>
+		// js
+		var codemirrors = $$('codemirror');
+		if (codemirrors.length) {
+			for (var i = 0, l = codemirrors.length; i < l; i++) {
+				CodeMirror.fromTextArea(codemirrors[i], {
+					lineNumbers: true,
+					mode: "javascript"
+				});
+			};
+		};
+	</script>
+</body>
+
+</html>
