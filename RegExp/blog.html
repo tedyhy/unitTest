@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>RegExp</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../js/base.js"></script>
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>RegExp</h1>
+<p>关键词：RegExp</p>
+<p>
+	正则表达式概念：
+</p>
+<textarea class="codemirror">
+正则表达式是一个描述字符模式的对象。JS正则表达式语法是Perl5正则表达式语法的大型子集。
+//创建方式
+1.使用构造器RegExp创建RegExp对象，如：var reg = new RegExp();
+2.正则表达式直接量定义，如：var reg = /s$/;</textarea>
+<p>
+	正则表达式直接量执行区别：
+</p>
+<textarea class="codemirror">
+ECMAS3规定，一个正则表达式直接量会在执行到它时转换为一个RegExp对象，
+同一段代码所表示正则表达式直接量的每次运算都返回同一个对象。
+ECMAS5则规定相反，同一段代码所表示的正则表达式直接量的每次运算都返回新对象，
+IE一直都是按照ECMAS5规范实现的。
+//例子，在ff3.6、ff4+环境中运行结果不一致
+function getRe(){
+	var re = /[a-z]/;
+	re.foo = 'bar';
+	return re;
+}
+var reg1 = getRe();
+var reg2 = getRe();
+console.log(reg1 === reg2); //ff3.6 true，ff4+ false
+reg2.foo = 'baz';
+console.log(reg1.foo); //ff3.6 'baz'，ff4+ 'bar'</textarea>
+<p>
+	正则表达式中具有特殊含义的标点符号：
+</p>
+<textarea class="codemirror">
+^ $ . * + ? = ! : | \ / () [ ] { }</textarea>
+<p>
+	非贪婪的重复：
+</p>
+<textarea class="codemirror">
+贪婪匹配会尽可能多地匹配，而且允许后续的正则表达式继续匹配。
+非贪婪匹配，只须在待匹配的字符后面跟随一个"?"。如：
+"??"、"+?"、"*?"、"{1,5}?"</textarea>
+<p>
+	选择、分组、引用：
+</p>
+<textarea class="codemirror">
+//例子：
+选择：选择匹配次序是从左到右，直到发现匹配项，一旦发现就不再向后匹配。
+/ab|cd|ef/
+/\d{3}|[a-z]{4}/
+分组：1)把单独的项组合成子表达式。2)在完整的模式中定义子模式。
+/java(script)?/
+/(ab|cd)+|ef/
+/[a-z]+(\d+)/
+引用：允许同一正则表达式的后部引用前面的子表达式。
+/(['"])[^'"]*['"]/ => /(['"])[^\1]*\1/
+
+//在正则表达式中不用创建带数字编码的引用，也可以对子表达式进行分组。如：
+/([Jj]ava(?:[Ss]cript)?)\sis\s(fun\w*)/
+
+前瞻匹配（正向先行断言）：
+/[Jj]ava([Ss]cript)?(?=\:)/
+'JavaScript: The Definitive Guide' 匹配
+'Java in a Nutshell' 不匹配
+后瞻匹配（负向先行断言）：
+/Java(?!Script)([A-Z]\w*)/
+'JavaBeans' 匹配
+'Javanese' 不匹配</textarea>
+<p>
+	正则表达式修饰符：
+</p>
+<textarea class="codemirror">
+i 忽略大小写
+g 全局匹配
+m 多行匹配模式，^匹配一行的开头和字符串的开头，$匹配一行的结束和字符串的结束</textarea>
+<p>
+	String支持4种正则表达式方法：
+</p>
+<textarea class="codemirror">
+1.search 它的参数是正则表达式，返回第一个与之匹配的子串的起始位置（索引）。找不到则返回-1。
+如果参数不是正则表达式，则会调用RegExp构造器将其转换成正则表达式。
+search不支持全局检索(g)，它忽略正则表达式参数中的修饰符g。
+'JavaScript'.search(/script/i); // 4
+2.replace 执行检索替换操作
+第一个参数可以是正则表达式、字符串
+'Javascript'.replace('script', 'Script'); //"JavaScript"
+'Javascript'.replace(/script/ig, 'Beans'); //"JavaBeans"
+'abc'.replace(/([^"]+)/g, ' {$1} '); //" {abc} "
+</textarea>
+
+
+	<script>
+		// js
+		var codemirrors = $$('codemirror');
+		if (codemirrors.length) {
+			for (var i = 0, l = codemirrors.length; i < l; i++) {
+				CodeMirror.fromTextArea(codemirrors[i], {
+					lineNumbers: true,
+					mode: "javascript"
+				});
+			};
+		};
+	</script>
+</body>
+
+</html>
