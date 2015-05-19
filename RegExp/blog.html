@@ -104,8 +104,46 @@ search不支持全局检索(g)，它忽略正则表达式参数中的修饰符g�
 'Javascript'.replace('script', 'Script'); //"JavaScript"
 'Javascript'.replace(/script/ig, 'Beans'); //"JavaBeans"
 'abc'.replace(/([^"]+)/g, ' {$1} '); //" {abc} "
-</textarea>
+3.match 唯一参数为正则表达式
+如果此正则表达式无g修饰符，则不会检索全局，只检索第一个匹配。返回值为数组。
+"1 plus 2 equals 3".match(/\d+/g); //["1", "2", "3"]
 
+var url = /(\w+)\:\/\/([\w\.]+)\/(\S*)/;
+var text = "Visit my blog at http://www.example.com/~tom";
+var res = text.match(url);
+console.log(res); //["http://www.example.com/~tom", "http", "www.example.com", "~tom"]
+4.split 参数可以是正则表达式，可以是字符串
+'1,2,3,4'.split(','); //["1", "2", "3", "4"]
+'1, 2,3, 4,5'.split(/\s*,\s*/); //["1", "2", "3", "4", "5"]</textarea>
+<p>
+	RegExp对象支持2种方法和一些属性：
+</p>
+<textarea class="codemirror">
+RegExp构造器带有2个字符串参数，第一个是正则表达式的主体部分，第二个是可选的，指定修饰符。
+如果第一个参数包含转义字符"\"，则需要替换成"\\"。
+RegExp构造函数很有用，特别是在需要动态创建正则表达式的场景。
+var zipcode = new RegExp('\\d{5}', 'g');
+
+1.每个RegExp对象都包含5个属性：
+zipcode.source; // "\d{5}"
+zipcode.global; // true
+zipcode.ignoreCase; // false
+zipcode.multiline; // false
+zipcode.lastIndex; // 0
+
+2.exec方法
+var pattern = /Java/g;
+var text = "JavaScript is more fun than Java!";
+var result;
+while((result = pattern.exec(text)) != null) {
+	console.log("Matched '" + result[0] + "'" + " at position " + result.index + "; Next search begins at " + pattern.lastIndex);
+}
+//Matched 'Java' at position 0; Next search begins at 4
+//Matched 'Java' at position 28; Next search begins at 32
+
+3.test方法
+var pattern = /java/i;
+pattern.test('JavaScript'); // true</textarea>
 
 	<script>
 		// js
