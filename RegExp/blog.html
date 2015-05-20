@@ -4,7 +4,6 @@
 <head>
 	<title>RegExp</title>
 	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
-	<script src="../js/base.js"></script>
 	<script src="../codemirror/lib/codemirror.js"></script>
 	<script src="../codemirror/mode/javascript/javascript.js"></script>
 	<script src="../codemirror/mode/xml/xml.js"></script>
@@ -145,18 +144,8 @@ while((result = pattern.exec(text)) != null) {
 var pattern = /java/i;
 pattern.test('JavaScript'); // true</textarea>
 
-	<script>
-		// js
-		var codemirrors = $$('codemirror');
-		if (codemirrors.length) {
-			for (var i = 0, l = codemirrors.length; i < l; i++) {
-				CodeMirror.fromTextArea(codemirrors[i], {
-					lineNumbers: true,
-					mode: "javascript"
-				});
-			};
-		};
-	</script>
+
+<script src="../js/base.js"></script>
 </body>
 
 </html>

@@ -4,7 +4,6 @@
 <head>
 	<title>Array</title>
 	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
-	<script src="../js/base.js"></script>
 	<script src="../codemirror/lib/codemirror.js"></script>
 	<script src="../codemirror/mode/javascript/javascript.js"></script>
 	<script src="../codemirror/mode/xml/xml.js"></script>
@@ -157,18 +156,8 @@ var a = {"0": "a", "1": "b", "2": "c", length: 3};
 </textarea>
 </p>
 
-	<script>
-		// js
-		var codemirrors = $$('codemirror');
-		if (codemirrors.length) {
-			for (var i = 0, l = codemirrors.length; i < l; i++) {
-				CodeMirror.fromTextArea(codemirrors[i], {
-					lineNumbers: true,
-					mode: "javascript"
-				});
-			};
-		};
-	</script>
+
+<script src="../js/base.js"></script>
 </body>
 
 </html>

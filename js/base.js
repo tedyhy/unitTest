@@ -23,3 +23,14 @@ var XHR = function() {
 		};
 	};
 };
+
+// js
+var codemirrors = $$('codemirror');
+if (codemirrors.length) {
+	for (var i = 0, l = codemirrors.length; i < l; i++) {
+		CodeMirror.fromTextArea(codemirrors[i], {
+			lineNumbers: true,
+			mode: "javascript"
+		});
+	};
+};

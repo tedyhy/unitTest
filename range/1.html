@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Range</title>
+	<script src="../js/base.js"></script>
+	<style type="text/css">
+
+	</style>
+</head>
+
+<body>
+	<!-- 1 -->
+	<div id="div" style="background-color: #e0a0b0;width: 300px;height: 50px;"><a href="#">ss</a>元素中的内容</div>
+	<button onclick="deleteRangeContents(true)">删除内容</button>
+	<button onclick="deleteRangeContents(false)">删除元素</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 2 -->
+	<div id="aaa" style="color:red;">这段文字中第三个文字到第十个文字将被删除</div>
+	<!-- <div id="bbb">abcdefghijklmn</div> -->
+	<button onclick="DeleteChar()">删除文字</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 3 -->
+	<table id="mytable" border="1" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>第一行第一列</td>
+			<td>第二行第二列</td>
+		</tr>
+		<tr>
+			<td>第二行第一列</td>
+			<td>第二行第二列</td>
+		</tr>
+	</table>
+	<button onclick="deleteFirstRow()">删除第一行</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 4 -->
+	<button onclick="cloneRange()">克隆Range对象</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 5 -->
+	<div id="cloneCts">
+		示例文字<br/>
+		<button onclick="cloneDivContent()">克隆</button>
+	</div>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 6 -->
+	<div id="srcdiv" style="background-color: #e0a0b0;width:300px;height:50px;">
+		<a href="#">adf</a>实例文字
+	</div>
+	<div id="destdiv" style="background-color: #a00000;width: 300px;height:50px;"></div>
+	<button onclick="moveContent()">移动元素内容</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 7 -->
+	<div id="ccft" style="background-color: yellow;">
+		实例文字
+	</div>
+	<button onclick="insertHtmlText()">在div元素中动态插入按钮</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 7 -->
+	<div onmouseup="moveButton()" style="400px;background-color: #e0f0d0;">
+		降息+降准 2008年以来央行降准、降息一览
+		中国成世界最大石油进口国 英媒：需求有增无减
+		IDG注资900万人民币 入股众筹出版平台“赞赏”
+		“最大赴法旅游团”被指系直销企业“出差”
+		多伦股份奇葩改名匹凸匹
+	</div>
+	<button id="insertNodeBtn">按钮</button>
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 8 -->
+	<div id="cbryp">
+		虚拟技术联手无人机 可做玩具也可做武器
+		国际财经头条：2015全球企业2000强中国4家银行包揽前四
+		全球要闻速递：<b id="boldText">卡梅伦</b>称不会允许苏格兰再次独立公投
+		香港反对派欲6月二次占中 扬言发动10万人阻政改
+		北京公积金贷款利率今起下调
+	</div>
+	<button onclick="testPlacement()"></button>
+
+
+
+	<script>
+		//1
+		function deleteRangeContents (onlycontent) {
+			var div = $('div'),
+				rangeObj = document.createRange();
+			if (onlycontent) {
+				rangeObj.selectNodeContents(div);
+			} else {
+				rangeObj.selectNode(div);
+			};
+
+			rangeObj.deleteContents();
+		}
+		//2
+		function DeleteChar(){
+			var div = $('aaa'),
+				textNode = div.firstChild,
+				rangeObj = document.createRange();
+
+			try{
+				rangeObj.setStart(textNode, 2);
+				rangeObj.setEnd(textNode, 10);
+				rangeObj.deleteContents();
+			}catch(e){}
+		}
+		//3
+		function deleteFirstRow(){
+			var table = $('mytable'),
+				rows = table.rows,
+				rangeObj,
+				row;
+			if (rows.length > 0) {
+				row = rows[0];
+				rangeObj = document.createRange();
+				rangeObj.setStartBefore(row);
+				rangeObj.setEndAfter(row);
+				rangeObj.deleteContents();
+			};
+		}
+		//4
+		function cloneRange(){
+			var rangeObj = document.createRange(),
+				rangeObjClone;
+			rangeObj.selectNodeContents(document.body);
+			rangeObjClone = rangeObj.cloneRange();
+			// rangeObj.deleteContents();
+			setTimeout(function(){
+				// document.body.innerHTML = rangeObjClone.toString();
+				console.log(rangeObjClone.commonAncestorContainer)
+			}, 3e3)
+		}
+		//5
+		function cloneDivContent(){
+			var div = $('cloneCts'),
+				rangeObj = document.createRange(),
+				documentFragment;
+			rangeObj.selectNodeContents(div);
+			documentFragment = rangeObj.cloneContents();
+			div.appendChild(documentFragment)
+		}
+		//6
+		function moveContent(){
+			var srcdiv = $('srcdiv'),
+				destdiv = $('destdiv'),
+				rangeObj = document.createRange(),
+				documentFragment;
+			rangeObj.selectNodeContents(srcdiv);
+			documentFragment = rangeObj.extractContents();
+			destdiv.appendChild(documentFragment)
+		}
+		//7
+		function insertHtmlText(){
+			var t = "<button onclick='alert(\"你好\")'>动态按钮</button>",
+				div = $('ccft'),
+				rangeObj = document.createRange(),
+				documentFragment = rangeObj.createContextualFragment(t);
+			div.insertBefore(documentFragment, div.firstChild);
+		}
+		//8
+		function moveButton(){
+			var btn = $('insertNodeBtn'),
+				selection = document.getSelection(),
+				range;
+			if (selection.rangeCount > 0) {
+				range = selection.getRangeAt(0);
+				range.insertNode(btn);
+			};
+		}
+		//9
+		function testPlacement(){
+			var boldText = $('')
+		}
+
+
+	</script>
+</body>
+
+</html>
