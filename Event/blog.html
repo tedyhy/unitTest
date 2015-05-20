@@ -18,8 +18,153 @@
 <body>
 <h1>Event</h1>
 <p>关键词：Event|window.addEventListener|window.attachEvent</p>
-<p></p>
-<textarea class="codemirror"></textarea>
+<p>
+	关于事件的一些重要定义：
+</p>
+<textarea class="codemirror">
+1.事件类型（event type）
+如："click"、"mousemove"等。
+2.事件目标（event target）
+Window对象、Document对象、Element元素等。
+event.target、window.event.srcElement
+3.事件对象（event object）
+event、window.event
+4.事件传播（event propagation）
+冒泡、捕获
+阻止冒泡：event.stopPropagation()、window.event.cancelBubble = true
+阻止默认行为：event.preventDefault()、window.event.returnValue = false
+</textarea>
+<p>
+	传统事件类型：
+</p>
+<textarea class="codemirror">
+1.表单事件
+focus、blur事件不会冒泡，其他表单事件都可以。
+IE：focusin、focusout事件可以冒泡，可以用来代替focus、blur事件。（jquery为不支持这两个事件的浏览器模拟了这两个事件）
+
+2.Window事件
+指事件的发生与浏览器窗口本身而非窗口中显示的任何特定文档内容相关。
+load、unload、beforeunload
+onerror
+resize、scroll
+//DOMContentLoaded、readystatechange
+
+3.鼠标事件
+mousemove、mousedown、mouseup
+click、dbclick
+contextmenu
+mouseover、mouseout
+IE：mouseenter、mouseleave（这两个不冒泡）（jquery为不支持这两个事件的浏览器模拟了这两个事件）
+mousewheel、DOMMouseScroll
+
+4.键盘事件
+keydown、keyup、keypress
+</textarea>
+<p>
+	注册事件处理程序：
+</p>
+<textarea class="codemirror">
+window.addEventListener、window.attachEvent、window.removeEventListener、window.detachEvent
+</textarea>
+<p>
+	设置元素对象属性为事件处理程序：
+</p>
+<textarea class="codemirror">
+window.onload = function(){
+	var ele = document.getElementById('form');
+	ele.onsubmit = function(){
+		return validate(this);
+	};
+};
+</textarea>
+<p>
+	设置html标签属性为事件处理程序：
+</p>
+<textarea class="codemirror">
+<button onclick="alert("a");">点击这里</button>
+</textarea>
+<p>
+	addEventListener|removeEventListener：
+</p>
+<textarea class="codemirror">
+//IE9+及标准浏览器支持
+//Window对象、Document对象、Element元素等支持。
+//第一个参数，不带"on"。
+//第三个参数{Boolean}，是否注册成捕获事件，true是，false为冒泡事件。
+var b = document.getElementById('mybutton');
+var fn = function(){
+	event = event || window.event;
+	console.log(event.type);
+};
+b.addEventListener("click", fn, false);
+b.removeEventListener("click", fn, false);
+//注意事件注册顺序
+</textarea>
+<p>
+	attachEvent|detachEvent：
+</p>
+<textarea class="codemirror">
+//IE支持
+//Window对象、Document对象、Element元素等支持。
+//第一个参数，带"on"。
+//无第三个参数{Boolean}。
+var b = document.getElementById('mybutton');
+var fn = function(event){
+	event = event || window.event; //事件回调的参数
+	console.log(event.type);
+	console.log(this); //事件回调的运行环境，IE:[object Window]，标：event.target
+};
+if (b.addEventListener) {
+	b.addEventListener("click", fn, false);
+} else {
+	b.attachEvent("onclick", fn);
+}
+</textarea>
+<p>
+	事件回调返回值：
+</p>
+<textarea class="codemirror">
+1.通过设置元素对象属性或HTML属性注册的事件回调返回false，将阻止浏览器默认行为。
+//当浏览器将要跳转到新页面时触发这个事件。
+window.onbeforeunload = function(){
+	return "Are you sure?";
+};
+onbeforeunload事件回调返回值将出现在询问用户是否想离开当前页面的标准对话框中。
+
+2.通过addEventListener、attachEvent注册的事件回调必须使用event.preventDefault()、
+window.returnValue = false阻止浏览器默认行为。
+</textarea>
+<p>
+	事件回调调用顺序：
+</p>
+<textarea class="codemirror">
+浏览器必须按照如下规则调用所有事件回调：
+1.通过设置元素对象属性或HTML属性注册的回调一直优先调用。
+2.使用addEventListener注册的事件回调按照它们的注册顺序调用。
+3.使用attachEvent注册的事件回调可能按照任何顺序调用，所以代码不应该依赖调用顺序。
+</textarea>
+<p>
+	事件传播：
+</p>
+<textarea class="codemirror">
+//冒泡机制
+在调用在目标元素上注册的事件回调后，大部分事件会“冒泡”到DOM树根。然后调用目标的父元素的事件回调，
+再然后调用目标元素的祖父元素上注册的事件回调。一直到Document对象，最后是Window对象。
+不冒泡事件：focus、blur、scroll。
+文档元素上的load事件会冒泡，但会在Document对象上停止，不会冒泡到Window对象。只有当整个文档都加载
+完毕时（包括图片等等），才会触发Window对象的load事件（也即window.onload事件）。
+
+//事件冒泡的三个阶段
+1.发生在目标元素回调调用之前，即“捕获”阶段。
+事件捕获在IE9+及标准浏览器中才能使用。
+事件捕获阶段像是冒泡的反向。最先调用Window对象的捕获回调，然后是Document对象的捕获回调，接着是body
+对象的捕获回调，然后是DOM树向下，依次类推，直到调用事件目标的父元素的捕获事件回调。在目标对象本身上
+注册的捕获事件回调不会被调用。
+事件捕获提供了在事件没有到达目标之前查看它们的机会。常用于处理拖放事件。
+2.目标对象本身的事件回调调用。
+3.事件冒泡阶段。
+</textarea>
+
 
 
 
