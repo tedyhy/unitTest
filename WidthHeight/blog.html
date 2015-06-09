@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>WidthHeight</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>WidthHeight</h1>
+<p>关键词：clientWidth|offsetWidth|scrollWidth|...</p>
+<p>
+	关于定位的一些属性：
+</p>
+<textarea class="codemirror">
+// 网页可见区域宽高，不包括：margin、border、滚动条。如：clientWidth = width + padding|clientHeight = height + padding
+1.document.body.clientWidth|document.body.clientHeight
+// 网页可见区域宽高，不包括：margin、滚动条。如：offsetWidth = width + padding + border|offsetHeight = height + padding + border
+2.document.body.offsetWidth|document.body.offsetHeight
+// 网页正文全文宽高
+3.document.body.scrollWidth|document.body.scrollHeight
+// 网页被卷去的宽高
+4.document.body.scrollLeft|document.body.scrollTop
+// 浏览器最顶端边缘距离屏幕顶端距离|浏览器最左端边缘距离屏幕左端距离
+5.window.screenTop|window.screenLeft
+// 屏幕相关信息对象，如：图1。
+6.window.screen
+// 鼠标事件，点击处距离
+7.event.clientX 相对网页可见区域左端的水平坐标
+  event.clientY 相对网页可见区域顶端的垂直坐标
+  event.offsetX 相对网页正文左端的水平坐标
+  event.offsetY 相对网页正文顶端的垂直坐标
+</textarea>
+<p>图1：</p>
+<img src="../img/window.screen.png">
+<p>图2：</p>
+<img src="../img/offset.gif">
+
+http://www.cnblogs.com/yuteng/articles/1894578.html
+<script src="../js/base.js"></script>
+</body>
+
+</html>
