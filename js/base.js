@@ -88,3 +88,11 @@ function removeEventListener(ele, type, fn) {
 		ele.detachEvent('on' + type, fn);
 	};
 };
+
+function stopPropagation(e){
+	if (e.stopPropagation) {
+		e.stopPropagation();
+	} else {
+		window.cancelBubble = true;
+	};
+};

@@ -22,30 +22,159 @@
 	关于定位的一些属性：
 </p>
 <textarea class="codemirror">
-// 网页可见区域宽高，不包括：margin、border、滚动条。如：clientWidth = width + padding|clientHeight = height + padding
-1.document.body.clientWidth|document.body.clientHeight
-// 网页可见区域宽高，不包括：margin、滚动条。如：offsetWidth = width + padding + border|offsetHeight = height + padding + border
-2.document.body.offsetWidth|document.body.offsetHeight
-// 网页正文全文宽高
-3.document.body.scrollWidth|document.body.scrollHeight
-// 网页被卷去的宽高
-4.document.body.scrollLeft|document.body.scrollTop
-// 浏览器最顶端边缘距离屏幕顶端距离|浏览器最左端边缘距离屏幕左端距离
-5.window.screenTop|window.screenLeft
+// 大部分浏览器对 clientHeight 都没有什么异议，都认为是内容可视区域的高度，即然是指可看到内容的区域，滚动条不算在内。
+// 但要注意padding是算在内。其计算方式为clientHeight = topPadding + height + bottomPadding。
+// FF、IE都一致（除了IE8额外加上了17px）。
+// 形象理解：盒子到内壁的宽高（包括padding），如：图4。
+1.clientHeight 视口大小
+  clientTop // border大小
+  // 获取浏览器视口大小方法（IE7之前使用document.body）。
+  function getViewport(){
+  	if (document.compatMode === "BackCompat") {
+		return {
+			width: document.body.clientWidth,
+			height: document.body.clientHeight
+		}
+  	} else {
+		return {
+			width: document.documentElement.clientWidth,
+			height: document.documentElement.clientHeight
+		}
+  	}
+  }
+
+
+// 形象理解：盒子到外壁的宽高（不包括margin），如：图3。
+2.offsetHeight 偏移量大小
+  offsetTop // 元素的左外边框至包含元素的左内边框间的距离。形象理解：子盒外壁距离父盒内壁。
+  offsetParent // 元素的包含元素引用保存在offsetParent属性中。offsetTop、offsetParent都与包含元素有关。offsetParent与parentNode值不一定相等。
+  // 获取某个元素在页面上的偏移量方法
+  function getEleLeft(ele){
+	var actualLeft = ele.offsetLeft,
+		current = ele.offsetParent;
+	while (current){
+		actualLeft += current.offsetLeft;
+		current = current.offsetParent;
+	}
+	return actualLeft;
+  }
+  function getEleTop(ele){
+	var actualTop = ele.offsetTop,
+		current = ele.offsetParent;
+	while (current){
+		actualTop += current.offsetTop;
+		current = current.offsetParent;
+	}
+	return actualTop;
+  }
+  // 注意：这些偏移量属性都是只读的，每次访问它们都需要重新计算，因此应该尽量避免重复访问这些属性。
+  // 需要重复访问，最好放到局部变量里，以提高性能。
+
+
+// 滚动大小，包含滚动内容的元素的大小。如：图5。
+3.scrollHeight
+  scrollHeight // 元素内容的总高度。
+  scrollTop // 被隐藏在内容区域左侧的像素数。
+  // 注意：scrollWidth、scrollHeight用于确定元素内容的实际大小。
+  // 通常认为html元素是在web浏览器的视口中滚动的元素（IE7之前运行在混杂模式下时是body元素）。
+  // 因此带有垂直滚动条的页面总高度就是document.documentElement.scrollHeight。
+  // scrollTop/scrollLeft属性值可以设置，值为整型数值。
+  /*
+	对于不包含滚动条的页面而言，scrollHeight、clientHeight之间关系并不十分清晰。这种情况下，
+	基于document.documentElement查看这些属性会在不同浏览器间发现一些不一致性问题，如下：
+	1)FF中这两组属性始终相等。但大小代表的是文档内容区域的实际尺寸，而非视口的尺寸。
+	2)Opera、Safari3.1+、Chrome中这两组有差别。scrollHeight等于视口大小，而clientHeight等于文档内容区域的大小。
+	3)IE(标准模式下)中这两组有差别。scrollHeight等于文档内容区域的大小，而clientHeight等于视口大小。
+	因此，在确定文档的总高度时，必须取得scrollHeight、clientHeight中的最大值，才能保证兼容，
+    （对于运行在混杂模式的IE，需要用document.body代替document.documentElement）。
+   */
+  var docHeight = Math.max(document.documentElement.scrollHeight, document.documentElement.clientHeight),
+  	docWidth = Math.max(document.documentElement.scrollWidth, document.documentElement.clientWidth);
+
+
+// 确定元素大小
+4.getBoundingClientRect
+  /*
+  	浏览器为每个元素提供了一个方法getBoundingClientRect方法（所有主流浏览器都支持包括ie6）。
+  	返回值为一个对象，包括4个属性：
+  	left、right、top、bottom。这些属性给出了元素在页面中相对于视口的位置。
+  	但是各浏览器下实现不同，ie7-认为文档的左上角坐标是(2,2)，而其他浏览器将(0,0)作为起点坐标。
+   */
+  function getBCR(ele){
+  	var scrollTop = document.documentElement.scrollTop,
+  		scrollLeft = document.documentElement.scrollLeft;
+  	if (ele.getBoundingClientRect) {
+		if (typeof getBCR.offset !== 'number') {
+			var tmp = document.createElement('div');
+			tmp.style.cssText = "position:absolute;left:0;top:0";
+			document.body.appendChild(tmp);
+			getBCR.offset = -tmp.getBoundingClientRect().top - scrollTop;
+			document.body.removeChild(tmp);
+			tmp = null;
+		}
+		var rect = ele.getBoundingClientRect(),
+			offset = getBCR.offset;
+		return {
+			left: rect.left + offset,
+			right: rect.right + offset,
+			top: rect.top + offset,
+			bottom: rect.bottom + offset
+		}
+  	} else {
+  		var actualLeft = getEleLeft(ele),
+  			actualTop = getEleTop(ele);
+  		return {
+  			left: actualLeft - scrollLeft,
+  			right: actualLeft + ele.offsetWidth - scrollLeft,
+  			top: actualTop - scrollTop,
+  			bottom: actualTop + ele.offsetHeight - scrollTop
+  		}
+  	}
+  }
+
+
 // 屏幕相关信息对象，如：图1。
-6.window.screen
-// 鼠标事件，点击处距离
-7.event.clientX 相对网页可见区域左端的水平坐标
-  event.clientY 相对网页可见区域顶端的垂直坐标
-  event.offsetX 相对网页正文左端的水平坐标
-  event.offsetY 相对网页正文顶端的垂直坐标
+5.window.screen
+  window.screenX|window.screenY
+  window.screenLeft|window.screenTop // 浏览器最顶端边缘距离屏幕顶端距离|浏览器最左端边缘距离屏幕左端距离
+
+
+6.鼠标事件距离属性
+  event.screenX|event.screenY 鼠标在屏幕上的坐标
+  event.clientX|event.clientY 鼠标在页面可见（显示）区域的坐标
+  // 注：以上两个都是各浏览器通用的。
+  event.pageX|event.pageY 鼠标点击坐标距离网页最顶部左上角距离
+  /*
+	1)pageX：FF特有，鼠标在页面上的位置，从页面左上角开始定位，这个可以很方便在整个页面上进行定位，IE没有直接替换的属性。
+	2)layerX：FF特有，鼠标相对于“触发事件的元素的层级关系中离该元素最近的，设置了position的父元素”的边界的位置，
+	从border的左上角开始定位，即如果这个父元素存在border，则坐标原点在border的左上角，而不是内容区域的左上角，IE可用x属性替代。
+	3)offsetX：IE特有，鼠标相对于“触发事件的元素”的位置，从内容区域左上角开始定位，不是从border左上角开始！
+	这个属性比较好用，用来判断鼠标点在一个元素中的哪个位置很方便，FF没有直接替换的属性。
+	4)x：IE特有，跟layerX一个效果，可作为layerX的直接替换属性。
+	注：IE和FF的定位有个1px的差别，实际上，IE的定位从0开始，FF的定位从1开始，FF永远会比IE大1px，需要根据实际情况处理。
+  */
 </textarea>
 <p>图1：</p>
 <img src="../img/window.screen.png">
 <p>图2：</p>
 <img src="../img/offset.gif">
+<p>图3：</p>
+<img src="../img/offsetWH.png">
+<p>图4：</p>
+<img src="../img/clientWH.png">
+<p>图5：</p>
+<img src="../img/scrollWH.png">
 
-http://www.cnblogs.com/yuteng/articles/1894578.html
+<br>
+参考：<br>
+1.<a href="http://www.soso.io/article/23175.html" target="_blank">http://www.soso.io/article/23175.html</a><br>
+2.<a href="http://www.cnblogs.com/yuteng/articles/1894578.html" target="_blank">http://www.cnblogs.com/yuteng/articles/1894578.html</a><br>
+3.<a href="http://www.w3cfuns.com/blog-5458331-5405322.html" target="_blank">http://www.w3cfuns.com/blog-5458331-5405322.html</a><br>
+4.<a href="http://www.jb51.net/article/22507.htm" target="_blank">http://www.jb51.net/article/22507.htm</a><br>
+5.<a href="http://www.cnblogs.com/wang726zq/archive/2012/05/10/scrollHeight.html" target="_blank">http://www.cnblogs.com/wang726zq/archive/2012/05/10/scrollHeight.html</a><br>
+6.<a href="http://blog.sina.com.cn/s/blog_6d3fcc7e01016qs2.html" target="_blank">http://blog.sina.com.cn/s/blog_6d3fcc7e01016qs2.html</a><br>
+7.<a href="http://www.cnblogs.com/wang726zq/archive/2012/05/10/2494256.html" target="_blank">http://www.cnblogs.com/wang726zq/archive/2012/05/10/2494256.html</a><br>
+8.<a href="http://blog.tvrcgo.com/1135" target="_blank">http://blog.tvrcgo.com/1135</a>
 <script src="../js/base.js"></script>
 </body>
 

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>WidthHeight</title>
+	<link type="text/css" href="../../css/reset.css" rel="stylesheet"/>
+	<style type="text/css">
+		.summary {
+			width: 1100px;
+			margin: 50px auto;
+			border: 1px solid #e8e8e8;
+		}
+		.summary .item-info-l {
+			float: left;
+			padding: 20px 0 20px 20px;
+		}
+		.summary .item-info-l .main-pic {
+			width: 400px;
+			height: 400px;
+			background-color: #f7f7f7;
+		}
+		.summary .item-info-l .a-pic {
+			display: table-cell;
+			width: 400px;
+			height: 400px;
+			vertical-align: middle;
+			text-align: center;
+		}
+		.summary .item-info-l img.pic {
+			max-width: 400px;
+			max-height: 400px;
+			*vertical-align: middle;
+		}
+		.summary .item-info-l img.pic i {
+			display:inline-block;
+			height:100%;
+			vertical-align:middle;
+		}
+		.summary .item-info-l .ks-imagezoom-lens {
+			width: 200px;
+			height: 200px;
+			cursor: move;
+			background: url('http://gtms01.alicdn.com/tps/i4/T12pdtXaldXXXXXXXX-2-2.png');
+		}
+		.item-info-l ul.thumb {
+			margin-top: 15px;
+		}
+		.item-info-l ul.thumb li {
+			float: left;
+			width: 50px;
+			height: 50px;
+			margin-right: 9px;
+			border: 2px solid #fff;
+		}
+		.item-info-l ul.thumb li.selected {
+			border-color: #f40;
+		}
+		.item-info-l ul.thumb li a {
+			display: table-cell;
+			width: 50px;
+			height: 50px;
+			vertical-align: middle;
+			text-align: center;
+		}
+		.item-info-l ul.thumb li img {
+			max-width: 50px;
+			max-height: 50px;
+		}
+		.summary .item-info-r {
+			float: left;
+		}
+		.ks-imagezoom-viewer {
+			top: 70px;
+			left: 510px;
+			width: 400px;
+			height: 400px;
+			border: 1px solid #eee;
+			overflow: hidden;
+			text-align: center;
+			z-index: 10000!important;
+		}
+		.ks-imagezoom-viewer img {
+			top: 0;
+			left: 0;
+		}
+	</style>
+</head>
+
+<body>
+<!-- http://www.cnblogs.com/cloudgamer/archive/2010/04/01/ImageZoom.html -->
+<div class="summary">
+	<div class="item-info clearfix">
+		<div class="item-info-l">
+			<div class="gallery">
+				<div class="main-pic pr">
+					<a class="a-pic"><img id="gpic" class="pic" src="http://gd2.alicdn.com/bao/uploaded/i2/TB16.DOHFXXXXayXFXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg" /></a>
+					<span id="imagezoom" class="ks-imagezoom-lens pa hidden" style="top: 0;left: 0;"></span>
+				</div>
+				<ul class="thumb clearfix">
+					<li><a class="a-thumb" data-mid="http://gd2.alicdn.com/bao/uploaded/i2/TB16.DOHFXXXXayXFXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg" data-big="http://gd2.alicdn.com/bao/uploaded/i2/TB16.DOHFXXXXayXFXXXXXXXXXX_!!0-item_pic.jpg" href="javascript:;"><img src="http://gd2.alicdn.com/bao/uploaded/i2/TB16.DOHFXXXXayXFXXXXXXXXXX_!!0-item_pic.jpg_50x50.jpg" /></a></li>
+					<li><a class="a-thumb" data-mid="http://gd1.alicdn.com/imgextra/i1/106207503/TB2It5zcFXXXXaTXpXXXXXXXXXX_!!106207503.jpg_400x400.jpg" data-big="http://gd1.alicdn.com/imgextra/i1/106207503/TB2It5zcFXXXXaTXpXXXXXXXXXX_!!106207503.jpg" href="javascript:;"><img src="http://gd1.alicdn.com/imgextra/i1/106207503/TB2It5zcFXXXXaTXpXXXXXXXXXX_!!106207503.jpg_50x50.jpg" /><i></i></a></li>
+					<li><a class="a-thumb" data-mid="http://gd3.alicdn.com/imgextra/i3/106207503/TB2CyWDcFXXXXbGXXXXXXXXXXXX_!!106207503.jpg_400x400.jpg" data-big="http://gd3.alicdn.com/imgextra/i3/106207503/TB2CyWDcFXXXXbGXXXXXXXXXXXX_!!106207503.jpg" href="javascript:;"><img src="http://gd3.alicdn.com/imgextra/i3/106207503/TB2CyWDcFXXXXbGXXXXXXXXXXXX_!!106207503.jpg_50x50.jpg" /></a></li>
+					<li><a class="a-thumb" data-mid="http://gd4.alicdn.com/imgextra/i4/106207503/TB2veGFcFXXXXauXXXXXXXXXXXX_!!106207503.jpg_400x400.jpg" data-big="http://gd4.alicdn.com/imgextra/i4/106207503/TB2veGFcFXXXXauXXXXXXXXXXXX_!!106207503.jpg" href="javascript:;"><img src="http://gd4.alicdn.com/imgextra/i4/106207503/TB2veGFcFXXXXauXXXXXXXXXXXX_!!106207503.jpg_50x50.jpg" /></a></li>
+					<li><a class="a-thumb" data-mid="http://gd2.alicdn.com/imgextra/i2/106207503/TB2VtCHcFXXXXXYXXXXXXXXXXXX_!!106207503.jpg_400x400.jpg" data-big="http://gd2.alicdn.com/imgextra/i2/106207503/TB2VtCHcFXXXXXYXXXXXXXXXXXX_!!106207503.jpg" href="javascript:;"><img src="http://gd2.alicdn.com/imgextra/i2/106207503/TB2VtCHcFXXXXXYXXXXXXXXXXXX_!!106207503.jpg_50x50.jpg" /></a></li>
+					<li><a class="a-thumb" data-mid="http://gd2.alicdn.com/imgextra/i2/TB1P5nTHFXXXXbAXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg" data-big="http://gd2.alicdn.com/imgextra/i2/TB1P5nTHFXXXXbAXpXXXXXXXXXX_!!0-item_pic.jpg" href="javascript:;"><img src="http://gd2.alicdn.com/imgextra/i2/TB1P5nTHFXXXXbAXpXXXXXXXXXX_!!0-item_pic.jpg_50x50.jpg" /></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="item-info-r"></div>
+	</div>
+</div>
+<div id="imagezoom-viewer" class="ks-imagezoom-viewer pa hidden">
+	<img id="imagezoomViewer" class="pa" src="http://gd2.alicdn.com/bao/uploaded/i2/TB16.DOHFXXXXayXFXXXXXXXXXX_!!0-item_pic.jpg" />
+</div>
+
+
+<script src="../../js/base.js"></script>
+<script>
+	// thumb
+	var thumb = $$('a-thumb'), gpic = $('gpic'), mainpic = gpic.parentNode.parentNode,
+		imagezoom = $('imagezoom'),
+		viewer = $('imagezoom-viewer'),
+		imagezoomViewer = $('imagezoomViewer'),
+		elem;
+	for (var i = 0, len = thumb.length; i<len; i++){
+		(function(elem){
+			addEventListener(elem, 'mouseover', function(e){
+				var src = elem.getAttribute('data-mid'), // 400*400 image
+					src2 = elem.getAttribute('data-big'); // big image
+				e = e || window.event;
+				addClass(elem.parentNode, 'selected');
+				gpic.setAttribute('src', src);
+				imagezoomViewer.setAttribute('src', src2);
+			});
+			addEventListener(elem, 'mouseout', function(e){
+				removeClass(elem.parentNode, 'selected');
+			});
+		})(thumb[i]);
+	}
+
+	// pic
+	addEventListener(gpic, 'mouseover', function(e){
+		e = e || window.event;
+		var bl = getViewerBili(),
+			wh = getImgSize(gpic),
+			w = bl.x*wh.w,
+			h = bl.y*wh.h;
+
+		imagezoom.style.width = w + 'px';
+		imagezoom.style.height = h + 'px';
+		positionZoom(e); //定位zoom
+		showImageZoom(); //显示imagezoom
+		showImageZoomViewer(); //显示imagezoomViewer
+	});
+	addEventListener(gpic, 'mousemove', function(e){
+		e = e || window.event;
+		positionZoom(e); //定位zoom
+	});
+	addEventListener(imagezoom, 'mousemove', function(e){
+		e = e || window.event;
+		positionZoom(e); //定位zoom
+	});
+	addEventListener(imagezoom, 'mouseout', function(e){
+		e = e || window.event;
+		hideImageZoom();
+		hideImageZoomViewer();
+	});
+
+	// imagezoom
+	function showImageZoom(){
+		removeClass(imagezoom, 'hidden');
+	}
+	function hideImageZoom(){
+		addClass(imagezoom, 'hidden');
+	}
+
+	// imagezoomViewer
+	function showImageZoomViewer(){
+		removeClass(viewer, 'hidden');
+	}
+	function hideImageZoomViewer(){
+		addClass(viewer, 'hidden');
+	}
+
+	// getImgSize
+	function getImgSize(ele){
+		var w = ele.clientWidth,
+			h = ele.clientHeight;
+		return {w: w, h: h};
+	}
+
+	// getOffset
+	function getOffset(ele){
+		var l = ele.offsetLeft,
+			t = ele.offsetTop;
+		return {l: l, t: t};
+	}
+
+	// getViewerBili
+	function getViewerBili(){
+		var wh = getImgSize(gpic),
+			wh2 = getImgSize(imagezoomViewer);
+		return {x: wh.w/wh2.w, y: wh.h/wh2.h};
+	}
+	// getZoomBili
+	function getZoomBili(){
+		var wh = getImgSize(imagezoom),
+			wh2 = getImgSize(gpic);
+		return {x: wh.w/wh2.w, y: wh.h/wh2.h};
+	}
+
+	// 定位imagezoom
+	function positionZoom(e){
+		var gpicOff = getOffset(gpic), //gpic
+			mainOff = getOffset(mainpic), //mainpic
+			gwh = getImgSize(gpic), //gpic size
+			zoomwh = getImgSize(imagezoom), //zoom size
+			gl = e.clientX - gpicOff.l - mainOff.l, //鼠标坐标x
+			gt = e.clientY - gpicOff.t - mainOff.t, //鼠标坐标y
+			_l = gl<zoomwh.w/2?0:(gwh.w-gl<zoomwh.w/2?gwh.w-zoomwh.w:gl-zoomwh.w/2),
+			_t = gt<zoomwh.h/2?0:(gwh.h-gt<zoomwh.h/2?gwh.h-zoomwh.h:gt-zoomwh.h/2);
+		// console.log({x: _l, y: _t})
+		imagezoom.style.left = gpicOff.l + _l + 'px';
+		imagezoom.style.top = gpicOff.t + _t + 'px';
+		//定位大图坐标
+		positionZoomViewer(_l, _t);
+	}
+
+	//定位大图坐标
+	function positionZoomViewer(l, t){
+		var bl = getViewerBili(),
+			left = l/bl.x,
+			top = t/bl.y;
+
+		imagezoomViewer.style.left = -left + 'px';
+		imagezoomViewer.style.top = -top + 'px';
+	}
+</script>
+</body>
+
+</html>
