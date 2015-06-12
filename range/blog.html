@@ -16,11 +16,30 @@
 </head>
 
 <body>
-<h1>Range</h1>
-<p>关键词：range</p>
-<p>
-<textarea class="codemirror">var range = document.createRange();
+<h1>Range（高程3 p95）</h1>
+<p>关键词：range|selection</p>
+<p>一、Range对象 & Selection对象</p>
+<p>1.概念<br>一个Range对象代表页面上的一段连续区域。通过Range对象，可以获取或修改页面上的任何区域。</p>
+<textarea class="codemirror">
+var range = document.createRange(); // 显示创建一个空的Range对象（该Range对象未包含任何内容）。
+</textarea>
+<p>每一个浏览器窗口及每一个窗口中的页面都具有一个Selection对象，代表用户鼠标在页面中所选取的区域。<br>
+每一个Selection对象都具有一个或多个Range对象。</p>
+<textarea class="codemirror">
+var selection = window.getSelection();
+var selection2 = document.getSelection();
+</textarea>
+<p>获取Selection对象的某个Range对象。</p>
+<textarea class="codemirror">
+var range = document.getSelection().getRangeAt(0);
+var rangecount = document.getSelection().rangeCount(); //判断用户是否用鼠标选取了内容，默认0。
+</textarea>
 
+
+
+
+<textarea class="codemirror">
+var range = document.createRange();
 var selection = window.getSelection();
 var selection = document.getSelection();
 
@@ -56,7 +75,6 @@ function deleteChar() {
 	range.setEnd(textnode, 10);
 	range.deleteContents();
 }</textarea>
-</p>
 
 
 <script src="../js/base.js"></script>
