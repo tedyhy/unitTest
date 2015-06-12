@@ -191,9 +191,35 @@
 
 	// getOffset
 	function getOffset(ele){
-		var l = ele.offsetLeft,
-			t = ele.offsetTop;
+		var l = getOffsetLeft(ele),
+			t = getOffsetTop(ele);
 		return {l: l, t: t};
+	}
+	function getOffsetLeft(ele){
+		var l = ele.offsetLeft,
+			cur = ele.offsetParent;
+		while(cur) {
+			l += cur.offsetLeft;
+			cur = cur.offsetParent;
+		}
+		return l;
+	}
+	function getOffsetTop(ele){
+		var t = ele.offsetTop,
+			cur = ele.offsetParent;
+		while(cur) {
+			t += cur.offsetTop;
+			cur = cur.offsetParent;
+		}
+		return t;
+	}
+	function getPageScroll(){
+		var de = document.documentElement,
+			body = document.body;
+		return {
+			l: Math.max(de.scrollLeft, body.scrollLeft),
+			t: Math.max(de.scrollTop, body.scrollTop)
+		}
 	}
 
 	// getViewerBili
@@ -213,17 +239,17 @@
 	function positionZoom(e){
 		var gpicOff = getOffset(gpic), //gpic
 			mainOff = getOffset(mainpic), //mainpic
+			deScroll = getPageScroll(), // document scroll
 			gwh = getImgSize(gpic), //gpic size
 			zoomwh = getImgSize(imagezoom), //zoom size
-			gl = e.clientX - gpicOff.l - mainOff.l, //鼠标坐标x
-			gt = e.clientY - gpicOff.t - mainOff.t, //鼠标坐标y
-			_l = gl<zoomwh.w/2?0:(gwh.w-gl<zoomwh.w/2?gwh.w-zoomwh.w:gl-zoomwh.w/2),
-			_t = gt<zoomwh.h/2?0:(gwh.h-gt<zoomwh.h/2?gwh.h-zoomwh.h:gt-zoomwh.h/2);
-		// console.log({x: _l, y: _t})
-		imagezoom.style.left = gpicOff.l + _l + 'px';
-		imagezoom.style.top = gpicOff.t + _t + 'px';
+			gl = e.clientX + deScroll.l - gpicOff.l, //鼠标坐标x
+			gt = e.clientY + deScroll.t - gpicOff.t; //鼠标坐标y
+			_l = gl<zoomwh.w/2?gpicOff.l-mainOff.l:(gl>gwh.w-zoomwh.w/2?gwh.w-zoomwh.w+gpicOff.l-mainOff.l:gl+gpicOff.l-mainOff.l-zoomwh.w/2),
+			_t = gt<zoomwh.h/2?gpicOff.t-mainOff.t:(gt>gwh.h-zoomwh.h/2?gwh.h-zoomwh.h+gpicOff.t-mainOff.t:gt+gpicOff.t-mainOff.t-zoomwh.h/2),
+		imagezoom.style.left = _l + 'px';
+		imagezoom.style.top = _t + 'px';
 		//定位大图坐标
-		positionZoomViewer(_l, _t);
+		positionZoomViewer(_l-gpic.offsetLeft, _t-gpic.offsetTop);
 	}
 
 	//定位大图坐标
