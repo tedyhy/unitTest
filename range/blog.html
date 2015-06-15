@@ -16,8 +16,9 @@
 </head>
 
 <body>
-<h1>Range（高程3 p95）</h1>
+<h1>Range</h1>
 <p>关键词：range|selection</p>
+<p>出处：HTML5&CSS3权威指南 P95</p>
 <p>一、Range对象 & Selection对象</p>
 <p>1.概念<br>一个Range对象代表页面上的一段连续区域。通过Range对象，可以获取或修改页面上的任何区域。</p>
 <textarea class="codemirror">
@@ -34,50 +35,88 @@ var selection2 = document.getSelection();
 var range = document.getSelection().getRangeAt(0);
 var rangecount = document.getSelection().rangeCount(); //判断用户是否用鼠标选取了内容，默认0。
 </textarea>
-
-
-
-
+<p>2.Range对象</p>
+<p>Range对象属性，如图1。</p>
 <textarea class="codemirror">
-var range = document.createRange();
-var selection = window.getSelection();
-var selection = document.getSelection();
+// 判断Range对象所代表的区域的开始点和结束点是否在相同位置，如果在则true，否则false。
+1.collapsed 	{Boolean}
 
-var range = selection.getRangeAt(0);
+// 返回Range对象所代表区域位于什么节点中。此节点为包含该区域的最底层节点，可能是一个DOM元素节点，
+// 可能是一个文本节点。
+2.commonAncestorContainer		{Node}
 
-if (selection.rangeCount > 0) {
-	return selection.getRangeAt(0);
-};
+// 返回Range对象所代表区域的起点位于什么节点中。此节点为包含该区域起点的最底层节点。
+3.startContainer 	{Node}
+
+// 返回Range对象所代表区域的终点位于什么节点中。此节点为包含该区域终点的最底层节点。
+4.endContainer 	{Node}
+
+// 返回Range对象所代表区域的起点与包含该起点的节点的起点间距离。
+5.startOffset 	{Int}
+
+// 返回Range对象所代表区域的终点与包含该终点的节点的起点间距离。
+6.endOffset 	{Int}
+</textarea>
+<p>3.Range对象的3个方法，例子1。</p>
+<p>selectNode、selectNodeContents、deleteContents方法</p>
+<textarea class="codemirror">
+// html片段
+<div id="div" style="background-color:#e0a0b0;width:300px;height:50px">元素中的内容</div>
+<button onclick="deleteRangeContents(true);">删除内容</button>
+<button onclick="deleteRangeContents(false);">删除元素</button>
+// js
+function deleteRangeContents(onlyContent){
+	var div = document.getElementById('div'),
+		rangeObj = document.createRange();
+	if (onlyContent) {
+		rangeObj.selectNodeContents(div);
+	} else {
+		rangeObj.selectNode(div);
+	}
+	rangeObj.deleteContents();
+}
+</textarea>
+<p>4.Range对象的6个方法，例子2。</p>
+<p>setStart、setEnd、setStartBefore、setStartAfter、setEndBefore、setEndAfter方法</p>
+<textarea class="codemirror">
+// 如：rangeObj.setStart(node, offsetInsideNode)
+// 如果node为DOM元素节点，则offsetInsideNode为节点node第几个子节点的结束位置。
+// 如果node为文字节点，则offsetInsideNode为节点node第几个文字的结束位置。
+// 将这个位置作为rangeObj的起始位置。
+1.setStart
+
+// 如：rangeObj.setEnd(node, offsetInsideNode)
+// 如果node为DOM元素节点，则offsetInsideNode为节点node第几个子节点的结束位置。
+// 如果node为文字节点，则offsetInsideNode为节点node第几个文字的结束位置。
+// 将这个位置作为rangeObj的结束位置。
+2.setEnd
+
+// 如：rangeObj.setStartBefore(node)
+// 将node节点的起点指定为rangeObj的起始位置。
+3.setStartBefore
+
+// 如：rangeObj.setStartAfter(node)
+// 将node节点的终点指定为rangeObj的起始位置。
+4.setStartAfter
+
+// 如：rangeObj.setEndBefore(node)
+// 将node节点的起点指定为rangeObj的终点位置。
+5.setEndBefore
+
+// 如：rangeObj.setEndAfter(node)
+// 将node节点的终点指定为rangeObj的终点位置。
+6.setEndAfter
+</textarea>
 
 
-range.
-	collapsed	true/false
-	commonAncestorContainer
-	startContainer
-	endContainer
-	startOffset
-	endOffset
 
 
-range.selectNode();
-range.selectNodeContents();
-range.deleteContents();
-
-range.setStart(node, start);
-range.setEnd(node, end);
-
-
-function deleteChar() {
-	var div = document.getElementById('DIV'),
-		textnode = div.firstChild,
-		range = document.createRange();
-	range.setStart(textnode, 2);
-	range.setEnd(textnode, 10);
-	range.deleteContents();
-}</textarea>
-
-
+<p>图1：</p>
+<img src="../img/range.png">
 <script src="../js/base.js"></script>
+<p>参考：<br></p>
+1.<a href="http://www.zhangxinxu.com/wordpress/?p=1591" target="_blank">JS Range HTML文档/文字内容选中、库及应用介绍</a><br>
+2.<a href="http://www.quirksmode.org/dom/w3c_range.html" target="_blank">W3C DOM Compatibility - Range</a>
 </body>
 
 </html>
