@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Keyboard Events</title>
+	<script src="../js/base.js"></script>
+	<style type="text/css">
+
+	</style>
+</head>
+
+<body>
+	
+	<script>
+		addEventListener(document, 'keydown', function(e){
+			e = e || window.event;
+			console.log("altKey:"+e.altKey+", ctrlKey:"+e.ctrlKey+", shiftKey:"+e.shiftKey+", metaKey:"+e.metaKey);
+			// IE：keyCode，标：which
+			console.log("which:"+e.which+", keyCode:"+e.keyCode)
+		})
+	</script>
+</body>
+
+</html>

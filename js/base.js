@@ -96,3 +96,17 @@ function stopPropagation(e){
 		window.cancelBubble = true;
 	};
 };
+
+window.console = window.console || {
+	log: function(msg){
+		var div = $('console');
+		if (div) {
+			div.innerHTML += (msg+'<br>');
+			return;
+		}
+		div = document.createElement('div');
+		div.style.cssText = "border:1px solid #eee;width:500px;height:300px;overflow:auto;position:absolute;right:0;top:0;";
+		div.id = "console";
+		document.body.appendChild(div);
+	}
+}
