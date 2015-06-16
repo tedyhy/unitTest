@@ -60,23 +60,22 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 <p>3.Range对象的3个方法，例子1。</p>
 <p>selectNode、selectNodeContents、deleteContents方法</p>
 <textarea class="codemirror">
-// html片段
-<div id="div" style="background-color:#e0a0b0;width:300px;height:50px">元素中的内容</div>
-<button onclick="deleteRangeContents(true);">删除内容</button>
-<button onclick="deleteRangeContents(false);">删除元素</button>
-// js
-function deleteRangeContents(onlyContent){
-	var div = document.getElementById('div'),
-		rangeObj = document.createRange();
-	if (onlyContent) {
-		rangeObj.selectNodeContents(div);
-	} else {
-		rangeObj.selectNode(div);
-	}
-	rangeObj.deleteContents();
-}
+// 如：rangeObj.selectNode(node)
+// 将Range对象的起点指定为node节点的起点，将Range对象的终点指定为node节点的终点。
+// 注意：一次只能选择一个节点，如：rangeObj.selectNode(node1) -> rangeObj.selectNode(node2)，
+// 则rangeObj对象中的节点为node2，node2会替换掉node1。
+1.selectNode
+
+// 如：rangeObj.selectNodeContents(node)
+// 将Range对象的起点指定为node节点中的所有内容的起点，将Range对象的终点指定为node节点中所有内容的
+// 终点。注意：一次只能选择一个节点，道理同上。
+2.selectNodeContents
+
+// 如：rangeObj.deleteContents()
+// 将Range对象中所包含的内容从页面中删除。
+3.deleteContents
 </textarea>
-<p>4.Range对象的6个方法，例子2。</p>
+<p>4.Range对象的6个方法，例子2、例子3。</p>
 <p>setStart、setEnd、setStartBefore、setStartAfter、setEndBefore、setEndAfter方法</p>
 <textarea class="codemirror">
 // 如：rangeObj.setStart(node, offsetInsideNode)
@@ -107,10 +106,42 @@ function deleteRangeContents(onlyContent){
 // 将node节点的终点指定为rangeObj的终点位置。
 6.setEndAfter
 </textarea>
+<p>5.Range对象的4个方法，例子4、5、6、7。</p>
+<p>cloneRange、cloneContents、extractContents、createContextualFragment方法</p>
+<textarea class="codemirror">
+// 如：var cloneObj = rangeObj.cloneRange()
+// 克隆复制rangeObj对象，返回cloneObj。
+1.cloneRange
+
+// 如：var documentFragment = rangeObj.cloneContents()
+// 克隆复制rangeObj对象所代表区域中的HTML代码，返回DocumentFragment对象，该对象为一个容器元素，
+// 当需要追加、修改、删除或查找页面上的元素时该对象将会非常有用。
+2.cloneContents
+
+// 如：var documentFragment = rangeObj.extractContents()
+// 克隆复制rangeObj对象所代表区域中的HTML代码，然后删除这段HTML代码，返回DocumentFragment对象。
+3.extractContents
+
+// 如：var documentFragment = rangeObj.createContextualFragment(htmlTxt)
+// 根据一段HTML代码创建一个DocumentFragment对象，即当你需要创建一个包含了初始HTML代码的DocumentFragment。
+4.createContextualFragment
+</textarea>
+<p>6.Range对象的1个方法，例子8。</p>
+<p>insertNode方法</p>
+<textarea class="codemirror">
+// 如：rangeObj.insertNode(node)
+// 将node节点插入到rangeObj对象所代表区域的起始位置，如果节点node已在页面中存在，则将把节点node
+// 移动到rangeObj对象所代表区域的起始位置。
+1.insertNode
+</textarea>
 
 
 
-
+<br>
+<br>
+<br>
+<br>
+<br>
 <p>图1：</p>
 <img src="../img/range.png">
 <script src="../js/base.js"></script>

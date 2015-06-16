@@ -29,6 +29,90 @@
 	<br>
 	<br>
 	<br>
+	<!-- 3 -->
+	<p>3.例子3</p>
+	<table id="myTable" border="1" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>第一行第一列</td>
+			<td>第一行第二列</td>
+		</tr>
+		<tr>
+			<td>第二行第一列</td>
+			<td>第二行第二列</td>
+		</tr>
+	</table>
+	<button onclick="DeleteFirstRow()">删除第一行</button>
+	<!-- /3 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 4 -->
+	<p>4.例子4</p>
+	<button onclick="CloneRange()">克隆Range对象</button>
+	<!-- /4 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 5 -->
+	<p>5.例子5</p>
+	<div id="CloneDivContent">
+		示例文字<br>
+		<button onclick="CloneDivContent()">克隆</button><br>
+	</div>
+	<!-- /5 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 6 -->
+	<p>6.例子6</p>
+	<div id="srcDiv" style="background-color:#e0a0b0;width:300px;height:50px;">示例文字</div>
+	<div id="destDiv" style="background-color:#a0e0b0;width:300px;height:50px;"></div>
+	<button onclick="MoveContent()">移动元素内容</button>
+	<!-- /6 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 7 -->
+	<p>7.例子7</p>
+	<div id="createCF" style="background-color:yellow;">
+		示例文字
+	</div>
+	<button onclick="InsertHtmlTxt()">在div元素中动态插入按钮</button>
+	<!-- /7 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 8 -->
+	<p>8.例子8</p>
+	<div onmouseup="MoveButton()" style="width:400px;background-color:#e0f0d0;">
+		女足战平新西兰
+		温州命案嫌犯落网
+		去年平均工资出炉
+		嘉德勋章受勋仪式
+		冯小刚机场发飙
+		江苏一女童玩耍溺亡
+		前央视主持马斌走私
+		辽宁张家成被查
+		廖永远被开除党籍
+		陆慷成外交部发言人
+		叶璇遭服务生侮辱
+		杰布布什参加大选
+		秦桧夫人跪像被摸黑
+		求爱未果捅死学妹
+		张铁林再报丑闻
+		唐嫣山寨礼服
+	</div>
+	<button id="button1">按钮</button>
+	<!-- /8 -->
+	<br>
+	<br>
+	<br>
+	<br>
 
 
 
@@ -54,7 +138,65 @@
 			rangeObj.setEnd(textNode, 10);
 			rangeObj.deleteContents();
 		}
-
+		//3
+		function DeleteFirstRow(){
+			var table = $('myTable'),
+				rows_len = table.rows.length,
+				rangeObj,
+				row;
+			if (rows_len > 0) {
+				rangeObj = document.createRange();
+				row = table.rows[0];
+				rangeObj.setStartBefore(row);
+				rangeObj.setEndAfter(row);
+				rangeObj.deleteContents();
+			};
+		}
+		//4
+		function CloneRange(){
+			var rangeObj = document.createRange(),
+				rangeCloneObj;
+			rangeObj.selectNodeContents(document.body);
+			rangeCloneObj = rangeObj.cloneRange();
+			console.log(rangeCloneObj.toString())
+		}
+		//5
+		function CloneDivContent(){
+			var div = $('CloneDivContent'),
+				rangeObj = document.createRange(),
+				documentFragment;
+			rangeObj.selectNodeContents(div);
+			documentFragment = rangeObj.cloneContents();
+			div.appendChild(documentFragment);
+		}
+		//6
+		function MoveContent(){
+			var srcDiv = $('srcDiv'),
+				destDiv = $('destDiv'),
+				rangeObj = document.createRange(),
+				extraFragment;
+			rangeObj.selectNodeContents(srcDiv);
+			extraFragment = rangeObj.extractContents();
+			destDiv.appendChild(extraFragment);
+		}
+		//7
+		function InsertHtmlTxt(){
+			var htmltxt = '<button onclick="alert(\'你好\')">动态按钮</button>',
+				div = $('createCF'),
+				rangeObj = document.createRange(),
+				documentFragment = rangeObj.createContextualFragment(htmltxt);
+			div.insertBefore(documentFragment, div.firstChild);
+		}
+		//8
+		function MoveButton(){
+			var btn = $('button1'),
+				selection = document.getSelection(),
+				rangeObj;
+			if (selection.rangeCount > 0) {
+				rangeObj = selection.getRangeAt(0);
+				rangeObj.insertNode(btn);
+			};
+		}
 
 
 	</script>
