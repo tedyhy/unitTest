@@ -1,83 +1,116 @@
+<!DOCTYPE html>
 <html>
-
 <head>
     <title>Drag</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1" />
     <style type="text/css">
     </style>
     <script type="text/javascript">
-    var Drag = {
-        //当前被drag的对象 
-        obj: null,
-        //初始化 
-        init: function(id) {
-            var o = document.getElementById(id);
-            //当onmousedown开始拖拽 
-            o.onmousedown = Drag.start;
-        },
-        start: function(e) {
-            var o = Drag.obj = this;
-            //lastMouseX，lastMouseY记录上次鼠标的位置 
-            o.lastMouseX = Drag.getEvent(e).x;
-            o.lastMouseY = Drag.getEvent(e).y;
-            //当onmousemove开始移动 
-            document.onmousemove = Drag.move;
-            //当onmouseup终止拖拽 
-            document.onmouseup = Drag.end;
-        },
-        move: function(e) {
-            var o = Drag.obj;
-            //dx, dy表示鼠标移动的距离 
-            var dx = Drag.getEvent(e).x - o.lastMouseX;
-            var dy = Drag.getEvent(e).y - o.lastMouseY;
-            //因为element.style.left通常返回的结果是'200px'的形式，所以要用parseInt转化 
-            var left = parseInt(o.style.left) + dx;
-            var top = parseInt(o.style.top) + dy;
-            o.style.left = left;
-            o.style.top = top;
-            o.lastMouseX = Drag.getEvent(e).x;
-            o.lastMouseY = Drag.getEvent(e).y;
-        },
-        end: function(e) {
-            document.onmousemove = null;
-            document.onMouseup = null;
-            Drag.obj = null;
-        },
-        //辅助函数，处理IE和FF不同的event模型 
-        getEvent: function(e) {
-            if (typeof e == 'undefined') {
-                e = window.event;
-            }
-            //alert(e.x?e.x : e.layerX); 
-            if (typeof e.x == 'undefined') {
-                e.x = e.layerX; //复制了n遍，到了csdn就变成ee.x了 
-            }
-            if (typeof e.y == 'undefined') {
-                e.y = e.layerY; //复制了n遍，到了csdn就变成ee.x了 
-            }
-            return e;
-        }
-    };
     </script>
 </head>
-
 <body>
-    <div id="r" style="position:absolute; left:100px; top:100px; background-color:red; height:80px; width:80px;"></div>
-    <div id="g" style="position:absolute; left:250px; top:100px; background-color:green; height:80px; width:80px;"></div>
-    <div id="b" style="position:absolute; left:400px; top:100px; background-color:blue; height:80px; width:80px;"></div>
+    <div id="r" style="position:absolute; left:100px; top:100px; background-color:red; height:80px; width:80px; z-index: 1000; cursor: move;"></div>
+    <div id="g" style="position:absolute; left:250px; top:100px; background-color:green; height:80px; width:80px; z-index: 1001; cursor: move;"></div>
+    <div id="b" style="position:absolute; left:400px; top:100px; background-color:blue; height:80px; width:80px; z-index: 1002; cursor: move;"></div>
 </body>
 <script type="text/javascript">
-//测试代码开始，使三个div具有drag and drop的能力。 
-Drag.init('r');
-Drag.init('g');
-Drag.init('b');
+
+(function(global){
+    var $ = function(id){
+        return document.getElementById(id);
+    };
+    function Drag(id){
+        this.init(id);
+    };
+    Drag.prototype = {
+        init: function(id){
+            var self = this, ele = $(id);
+            this.ele = ele;
+            ele.onmousedown = function(e){
+                self.start.call(self, e);
+            };
+            ele.onselectstart = function(e){
+                e = self.getEvent(e);
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else window.event.returnVlaue = false;
+            };
+        },
+        start: function(e){
+            e = this.getEvent(e);
+            var self = this,
+                offsetXY = this.getOffset(this.ele),
+                pageXY = this.getPageXY(e);
+            this.x = offsetXY.left;
+            this.y = offsetXY.top;
+            this.px = pageXY.left;
+            this.py = pageXY.top;
+            document.onmousemove = function(e){
+                self.move.call(self, e);
+            }
+            document.onmouseup = function(e){
+                self.end.call(self, e);
+            }
+        },
+        move: function(e){
+            e = this.getEvent(e);
+            var ele = this.ele,
+                pageXY = this.getPageXY(e),
+                px = this.px,
+                py = this.py,
+                _x = this.x + pageXY.left - px;
+                _y= this.y + pageXY.top - py;
+
+            ele.style.top = _y + 'px';
+            ele.style.left = _x + 'px';
+        },
+        end: function(e){
+            e = this.getEvent(e);
+            var pageXY = this.getPageXY(e);
+            this.px = pageXY.left;
+            this.py = pageXY.top;
+            document.onmousemove = null;
+            document.onmouseup = null;
+        },
+        getPageXY: function(e){
+            var top = document.documentElement.scrollTop + e.clientY,
+                left = document.documentElement.scrollLeft + e.clientX;
+            return {top: top, left: left};
+        },
+        getEvent: function(e){
+            return e || window.event;
+        },
+        getEleWH: function(){
+            var ele = this.ele,
+                w = ele.offsetWidth,
+                h = ele.offsetHeight;
+            return {width: w, height: h};
+        },
+        getOffset: function(ele){
+            var x = ele.offsetLeft,
+                y = ele.offsetTop,
+                current = ele.offsetParent;
+            while(current) {
+                x = x + current.offsetLeft;
+                y = y + current.offsetTop;
+                current = current.offsetParent;
+            }
+            return {top: y, left: x};
+        }
+    };
+    global.Drag = Drag;
+})(this);
+
+new Drag('r')
+new Drag('g')
+new Drag('b')
 </script>
 
 
-
-
-<div>
-参考：
-https://msdn.microsoft.com/library/ms536923(v=vs.85).aspx
-https://github.com/gtramontina/draggable.js/blob/master/draggable.js
-</div>
+<p>参考：</p>
+1.<a href="https://msdn.microsoft.com/library/ms536923(v=vs.85).aspx" target="_blank">为非IE浏览器添加mouseenter,mouseleave事件的实现代码</a>
+<br> 2.
+<a href="https://github.com/gtramontina/draggable.js/blob/master/draggable.js" target="_blank">为非IE浏览器添加mouseenter,mouseleave事件的实现代码</a>
+<br>
 </html>

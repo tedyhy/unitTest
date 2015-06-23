@@ -238,14 +238,34 @@ var whenReady = (function() {
 	}
 })();
 </textarea>
+<p>
+	八、鼠标事件
+</p>
+<textarea class="codemirror">
+1.鼠标事件
+mousedown、mouseup、mousemove、mouseover、mouseout、mouseenter、mouseleave 
+click、dblclick、contextmenu
 
+2.点击事件发生的先后顺序
+click: 		mousedown->mouseup->click
+dblclick: 	mousedown->mouseup->click , mousedown->mouseup->click , dblclick
+
+3.鼠标事件对象
+event.clientX
+event.ctrlKey、event.altKey、event.shiftKey、event.metaKey
+</textarea>
+参考：
+<a href="http://blog.csdn.net/z69183787/article/details/25031183" target="_blank">click与dblclick事件冲突解决方法</a><br>
+
+
+
+<br><br><br><br><br>
 <p>参考：</p>
 1.<a href="http://www.jb51.net/article/27436.htm" target="_blank">为非IE浏览器添加mouseenter,mouseleave事件的实现代码</a><br>
 2.<a href="http://www.w3school.com.cn/jsref/event_relatedtarget.asp" target="_blank">relatedTarget 事件属性</a><br>
 3.<a href="http://www.cnblogs.com/pigtail/archive/2012/06/07/2540246.html" target="_blank">使用 contains和compareDocumentPosition 方法来确定HTML节点间的关系</a><br>
 4.<a href="http://www.w3school.com.cn/jsref/event_relatedtarget.asp" target="_blank">contains与compareDocumentPosition方法详解</a><br>
 5.<a href="http://www.w3school.com.cn/jsref/met_node_comparedocumentposition.asp" target="_blank">W3School HTML DOM compareDocumentPosition() 方法</a><br>
-
 <script src="../js/base.js"></script>
 </body>
 
