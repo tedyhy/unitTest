@@ -11,6 +11,7 @@
 
 <body>
 	<!-- 1 -->
+	<div id="example1"></div>
 	<p>1.例子1</p>
 	<div id="div" style="background-color:#e0a0b0;width:300px;height:50px">元素中的内容</div>
 	<button onclick="deleteRangeContents(true);">删除内容</button>
@@ -21,6 +22,7 @@
 	<br>
 	<br>
 	<!-- 2 -->
+	<div id="example2"></div>
 	<p>2.例子2</p>
 	<div id="myDiv" style="color:red;">这段文字中第三个文字到第十个文字将被删除</div>
 	<button onclick="deleteChar();">删除文字</button>
@@ -31,6 +33,7 @@
 	<br>
 	<!-- 3 -->
 	<p>3.例子3</p>
+	<div id="example3"></div>
 	<table id="myTable" border="1" cellpadding="0" cellspacing="0">
 		<tr>
 			<td>第一行第一列</td>
@@ -48,6 +51,7 @@
 	<br>
 	<br>
 	<!-- 4 -->
+	<div id="example4"></div>
 	<p>4.例子4</p>
 	<button onclick="CloneRange()">克隆Range对象</button>
 	<!-- /4 -->
@@ -56,6 +60,7 @@
 	<br>
 	<br>
 	<!-- 5 -->
+	<div id="example5"></div>
 	<p>5.例子5</p>
 	<div id="CloneDivContent">
 		示例文字<br>
@@ -67,6 +72,7 @@
 	<br>
 	<br>
 	<!-- 6 -->
+	<div id="example6"></div>
 	<p>6.例子6</p>
 	<div id="srcDiv" style="background-color:#e0a0b0;width:300px;height:50px;">示例文字</div>
 	<div id="destDiv" style="background-color:#a0e0b0;width:300px;height:50px;"></div>
@@ -77,6 +83,7 @@
 	<br>
 	<br>
 	<!-- 7 -->
+	<div id="example7"></div>
 	<p>7.例子7</p>
 	<div id="createCF" style="background-color:yellow;">
 		示例文字
@@ -88,6 +95,7 @@
 	<br>
 	<br>
 	<!-- 8 -->
+	<div id="example8"></div>
 	<p>8.例子8</p>
 	<div onmouseup="MoveButton()" style="width:400px;background-color:#e0f0d0;">
 		女足战平新西兰
@@ -109,6 +117,17 @@
 	</div>
 	<button id="button1">按钮</button>
 	<!-- /8 -->
+	<br>
+	<br>
+	<br>
+	<br>
+	<!-- 9 -->
+	<div id="example9"></div>
+	<p>9.例子9</p>
+	选取页面中的一些文字后单机“位置比较”按钮，将选取文字与<b id="boldText">粗体文字</b>进行
+	前后位置的比较，并且在弹出提示信息框中显示比较结果。<br>
+	<button onclick="TestPlacement()">位置比较</button>
+	<!-- /9 -->
 	<br>
 	<br>
 	<br>
@@ -195,6 +214,24 @@
 			if (selection.rangeCount > 0) {
 				rangeObj = selection.getRangeAt(0);
 				rangeObj.insertNode(btn);
+			};
+		}
+		//9
+		function TestPlacement(){
+			var boldText = $('boldText'),
+				rangeBold = document.createRange(),
+				rangeObj,
+				selection;
+			rangeBold.selectNodeContents(boldText.firstChild);
+			selection = document.getSelection();
+			if (selection.rangeCount > 0) {
+				rangeObj = selection.getRangeAt(0);
+				// console.log(rangeObj.compareBoundaryPoints(Range.START_TO_START, rangeBold))
+				// console.log(rangeObj.compareBoundaryPoints(Range.START_TO_END, rangeBold))
+				// console.log(rangeObj.compareBoundaryPoints(Range.END_TO_START, rangeBold))
+				// console.log(rangeObj.compareBoundaryPoints(Range.END_TO_END, rangeBold))
+				// console.log(rangeObj.compareNode(boldText))
+				// console.log(rangeObj.intersectsNode(boldText));
 			};
 		}
 

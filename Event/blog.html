@@ -18,8 +18,9 @@
 <body>
 <h1>Event</h1>
 <p>关键词：Event|window.addEventListener|window.attachEvent</p>
+<p>参考《javascript权威指南P440》</p>
 <p>
-	关于事件的一些重要定义：
+	一、关于事件的一些重要定义
 </p>
 <textarea class="codemirror">
 1.事件类型（event type）
@@ -35,7 +36,7 @@ event、window.event
 阻止默认行为：event.preventDefault()、window.event.returnValue = false
 </textarea>
 <p>
-	传统事件类型：
+	二、传统事件类型
 </p>
 <textarea class="codemirror">
 1.表单事件
@@ -56,18 +57,54 @@ contextmenu
 mouseover、mouseout
 IE：mouseenter、mouseleave（这两个不冒泡）（jquery为不支持这两个事件的浏览器模拟了这两个事件）
 mousewheel、DOMMouseScroll
+/* 注意：
+	1）不论鼠标指针穿过被选元素或其子元素，都会触发 mouseover 事件，对应mouseout。
+	2）只有在鼠标指针穿过被选元素时，才会触发 mouseenter 事件，对应mouseleave。
+*/
+// 为非IE浏览器添加mouseenter、mouseleave事件的实现代码
+E = function() {
+	function elContains(a, b) {
+		try {
+			return a.contains ? a != b && a.contains(b) : !!(a.compareDocumentPosition(b) & 16);
+		} catch (e) {};
+	}
+
+	function addEvent(el, type, fn) {
+		function func(e) {
+			var a = e.currentTarget,
+				b = e.relatedTarget;
+			if (a != b && !elContains(a, b)) {
+				fn.call(a, e);
+			}
+		}
+		if (el.addEventListener) {
+			if (type === 'mouseenter') {
+				el.addEventListener('mouseover', func, false);
+			} else if (type === 'mouseleave') {
+				el.addEventListener('mouseout', func, false);
+			} else {
+				el.addEventListener(type, fn, false);
+			}
+		} else {
+			el.attachEvent('on' + type, fn);
+		}
+	}
+	return {
+		addEvent: addEvent
+	};
+}();
 
 4.键盘事件
 keydown、keyup、keypress
 </textarea>
 <p>
-	注册事件处理程序：
+	三、注册事件处理程序
 </p>
 <textarea class="codemirror">
 window.addEventListener、window.attachEvent、window.removeEventListener、window.detachEvent
 </textarea>
 <p>
-	设置元素对象属性为事件处理程序：
+	1.设置元素对象属性为事件处理程序
 </p>
 <textarea class="codemirror">
 window.onload = function(){
@@ -78,13 +115,13 @@ window.onload = function(){
 };
 </textarea>
 <p>
-	设置html标签属性为事件处理程序：
+	2.设置html标签属性为事件处理程序
 </p>
 <textarea class="codemirror">
-<button onclick="alert("a");">点击这里</button>
+<button onclick='alert("a");'>点击这里</button>
 </textarea>
 <p>
-	addEventListener|removeEventListener：
+	3.addEventListener|removeEventListener（标准浏览器）
 </p>
 <textarea class="codemirror">
 //IE9+及标准浏览器支持
@@ -101,7 +138,7 @@ b.removeEventListener("click", fn, false);
 //注意事件注册顺序
 </textarea>
 <p>
-	attachEvent|detachEvent：
+	attachEvent|detachEvent（IE）
 </p>
 <textarea class="codemirror">
 //IE支持
@@ -121,7 +158,7 @@ if (b.addEventListener) {
 }
 </textarea>
 <p>
-	事件回调返回值：
+	四、事件回调返回值
 </p>
 <textarea class="codemirror">
 1.通过设置元素对象属性或HTML属性注册的事件回调返回false，将阻止浏览器默认行为。
@@ -135,7 +172,7 @@ onbeforeunload事件回调返回值将出现在询问用户是否想离开当前
 window.returnValue = false阻止浏览器默认行为。
 </textarea>
 <p>
-	事件回调调用顺序：
+	五、事件回调调用顺序
 </p>
 <textarea class="codemirror">
 浏览器必须按照如下规则调用所有事件回调：
@@ -144,7 +181,7 @@ window.returnValue = false阻止浏览器默认行为。
 3.使用attachEvent注册的事件回调可能按照任何顺序调用，所以代码不应该依赖调用顺序。
 </textarea>
 <p>
-	事件传播：
+	六、事件传播
 </p>
 <textarea class="codemirror">
 //冒泡机制
@@ -165,13 +202,49 @@ window.returnValue = false阻止浏览器默认行为。
 3.事件冒泡阶段。
 </textarea>
 <p>
-	文档加载事件：
+	七、文档加载事件
 </p>
 <textarea class="codemirror">
+/* 文档加载解析完毕且所有延迟（deferred）脚本都执行完毕时会触发DOMContentLoaded事件，此时图片
+和异步（async）脚本可能依旧在加载，但是文档已经为操作准备就绪了。标准浏览器都引入了这个事件，包括
+IE9+。它属于DOM3事件标准的一部分，且HTML5标准化了它。
+*/
+// 当文档准备就绪时调用函数
+var whenReady = (function() {
+	var funcs = [],
+		ready = false;
 
+	function handler(e) {
+		if (ready) return;
+		if (e.type === 'readstatechange' && document.readystate !== 'complete') return;
+		for (var i = 0, len = funcs.length; i < len; i++) {
+			funcs[i].call(document);
+		}
+		ready = true;
+		funcs = null;
+	}
+	if (document.addEventListener) {
+		document.addEventListener('DOMContentLoaded', handler, false);
+		document.addEventListener('readystatechange', handler, false);
+		document.addEventListener('load', handler, false);
+	} else if (document.attachEvent) {
+		document.attachEvent('onreadystatechange', handler);
+		window.attachEvent('onload', handler);
+	}
+
+	return function(f) {
+		if (ready) f.call(document);
+		else funcs.push(f);
+	}
+})();
 </textarea>
 
-
+<p>参考：</p>
+1.<a href="http://www.jb51.net/article/27436.htm" target="_blank">为非IE浏览器添加mouseenter,mouseleave事件的实现代码</a><br>
+2.<a href="http://www.w3school.com.cn/jsref/event_relatedtarget.asp" target="_blank">relatedTarget 事件属性</a><br>
+3.<a href="http://www.cnblogs.com/pigtail/archive/2012/06/07/2540246.html" target="_blank">使用 contains和compareDocumentPosition 方法来确定HTML节点间的关系</a><br>
+4.<a href="http://www.w3school.com.cn/jsref/event_relatedtarget.asp" target="_blank">contains与compareDocumentPosition方法详解</a><br>
+5.<a href="http://www.w3school.com.cn/jsref/met_node_comparedocumentposition.asp" target="_blank">W3School HTML DOM compareDocumentPosition() 方法</a><br>
 
 <script src="../js/base.js"></script>
 </body>

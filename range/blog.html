@@ -36,7 +36,7 @@ var range = document.getSelection().getRangeAt(0);
 var rangecount = document.getSelection().rangeCount(); //判断用户是否用鼠标选取了内容，默认0。
 </textarea>
 <p>2.Range对象</p>
-<p>Range对象属性，如图1。</p>
+<p>Range对象属性，<a href="#pic1">如图1</a>。</p>
 <textarea class="codemirror">
 // 判断Range对象所代表的区域的开始点和结束点是否在相同位置，如果在则true，否则false。
 1.collapsed 	{Boolean}
@@ -57,7 +57,7 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 // 返回Range对象所代表区域的终点与包含该终点的节点的起点间距离。
 6.endOffset 	{Int}
 </textarea>
-<p>3.Range对象的3个方法，例子1。</p>
+<p>3.Range对象的3个方法，<a href="./1.html#example1">例子1</a>。</p>
 <p>selectNode、selectNodeContents、deleteContents方法</p>
 <textarea class="codemirror">
 // 如：rangeObj.selectNode(node)
@@ -75,7 +75,7 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 // 将Range对象中所包含的内容从页面中删除。
 3.deleteContents
 </textarea>
-<p>4.Range对象的6个方法，例子2、例子3。</p>
+<p>4.Range对象的6个方法，<a href="./1.html#example2">例子2</a>、<a href="./1.html#example3">例子3</a>。</p>
 <p>setStart、setEnd、setStartBefore、setStartAfter、setEndBefore、setEndAfter方法</p>
 <textarea class="codemirror">
 // 如：rangeObj.setStart(node, offsetInsideNode)
@@ -106,7 +106,7 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 // 将node节点的终点指定为rangeObj的终点位置。
 6.setEndAfter
 </textarea>
-<p>5.Range对象的4个方法，例子4、5、6、7。</p>
+<p>5.Range对象的4个方法，<a href="./1.html#example4">例子4</a>、<a href="./1.html#example5">例子5</a>、<a href="./1.html#example6">例子6</a>、<a href="./1.html#example7">例子7</a>。</p>
 <p>cloneRange、cloneContents、extractContents、createContextualFragment方法</p>
 <textarea class="codemirror">
 // 如：var cloneObj = rangeObj.cloneRange()
@@ -126,13 +126,41 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 // 根据一段HTML代码创建一个DocumentFragment对象，即当你需要创建一个包含了初始HTML代码的DocumentFragment。
 4.createContextualFragment
 </textarea>
-<p>6.Range对象的1个方法，例子8。</p>
+<p>6.Range对象的1个方法，<a href="./1.html#example8">例子8</a>。</p>
 <p>insertNode方法</p>
 <textarea class="codemirror">
 // 如：rangeObj.insertNode(node)
 // 将node节点插入到rangeObj对象所代表区域的起始位置，如果节点node已在页面中存在，则将把节点node
 // 移动到rangeObj对象所代表区域的起始位置。
 1.insertNode
+</textarea>
+<p>7.Range对象的5个方法，<a href="./1.html#example9">例子9</a>。</p>
+<p>compareBoundaryPoints、compareNode、intersectsNode、comparePoint和isPointInRange方法</p>
+<textarea class="codemirror">
+// 如：rangeObj.compareBoundaryPoints(type, rangeToCompare)
+// 用于比较两个Range对象的起始点或终点。返回值为整型数值：-1、0、1。
+/* type类型：
+	Range.START_TO_START 	0
+	Range.START_TO_END 		1
+	Range.END_TO_END 		2
+	Range.END_TO_START 		3
+*/
+1.compareBoundaryPoints
+
+// 如：rangeObj.compareNode(nodeToCompare)
+// 将rangeObj所代表的区域与元素节点nodeToCompare进行位置前后的比较。
+// chrome下：'Range.compareNode()' is deprecated. Please use 'Range.compareBoundaryPoints()' instead.
+/* 返回值为整型数值：
+	Range.NODE_BEFORE 				0
+	Range.NODE_AFTER 				1
+	Range.NODE_BEFORE_AND_AFTER 	2
+	Range.NODE_INSIDE 				3
+*/
+2.compareNode
+
+// 如：rangeObj.intersectsNode(nodeToCheck)
+// 用于判断rangeObj所代表区域与节点nodeToCheck是否有重叠部分。返回值为布尔型。
+3.intersectsNode
 </textarea>
 
 
@@ -142,12 +170,15 @@ var rangecount = document.getSelection().rangeCount(); //判断用户是否用�
 <br>
 <br>
 <br>
+<div id="pic1"></div>
 <p>图1：</p>
 <img src="../img/range.png">
 <script src="../js/base.js"></script>
-<p>参考：<br></p>
-1.<a href="http://www.zhangxinxu.com/wordpress/?p=1591" target="_blank">JS Range HTML文档/文字内容选中、库及应用介绍</a><br>
-2.<a href="http://www.quirksmode.org/dom/w3c_range.html" target="_blank">W3C DOM Compatibility - Range</a>
+<p>参考：</p>
+1.<a href="http://www.w3help.org/zh-cn/causes/SD9031" target="_blank">SD9031: 各浏览器对 Range 接口的实现存在差异</a><br>
+2.<a href="http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html" target="_blank">Document Object Model Range</a><br>
+3.<a href="http://www.zhangxinxu.com/wordpress/?p=1591" target="_blank">JS Range HTML文档/文字内容选中、库及应用介绍</a><br>
+4.<a href="http://www.quirksmode.org/dom/w3c_range.html" target="_blank">W3C DOM Compatibility - Range</a>
 </body>
 
 </html>
