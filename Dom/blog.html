@@ -106,16 +106,46 @@ function convertToArray(nodes){
 	操作节点方法
 </p>
 <textarea class="codemirror">
-/*
-	8)appendChild
-	向 childNodes 列表的末尾添加一个节点，appendChild() 返回新增的节点。
+/* 插入节点 */
+8)appendChild
+向 childNodes 列表的末尾添加一个节点，appendChild() 返回新增的节点。
 
-	var returnedNode = someNode.appendChild(newNode);
-	console.log(returnedNode === newNode) // true
-	console.log(someNode.lastNode === newNode) // true
-*/
+var returnedNode = someNode.appendChild(newNode);
+console.log(returnedNode === newNode) // true
+console.log(someNode.lastNode === newNode) // true
 
 
+9)insertBefore
+接受两个参数:要插入的节点和作为参照的节点。
+如果参照节点是 null,则 insertBefore()与 appendChild()执行相同的操作。
+
+//插入后成为最后一个子节点
+var returnedNode = someNode.insertBefore(newNode, null);
+console.log(returnedNode === someNode.lastNode); // true
+//插入后成为第一个子节点
+var returnedNode = someNode.insertBefore(newNode, someNode.firstNode);
+console.log(returnedNode === newNode); // true
+console.log(returnedNode === someNode.firstNode); // true
+//插入到最后一个子节点前面
+var returnedNode = someNode.insertBefore(newNode, someNode.lastNode);
+console.log(returnedNode === newNode); // true
+console.log(returnedNode === someNode.childNodes[someNode.childNodes.length-2]); // true
+
+
+/* 移除节点 */
+10)replaceChild
+接受两个参数：要插入的节点和要替换的节点。
+要替换的节点将由这个方法返回并从文档树中被移除,同时由要插入的节点占据其位置。
+//替换第一个子节点
+var returnedNode = someNode.replaceChild(newNode, someNode.firstChild);
+//替换最后一个子节点
+var returnedNode = someNode.replaceChild(newNode, someNode.lastChild);
+
+11)removeChild
+//移除第一个子节点
+var returnedNode = someNode.removeChild(someNode.firstNode);
+//移除最后一个子节点
+var returnedNode = someNode.removeChild(someNode.lastNode);
 
 </textarea>
 <h4>Document类型</h4>
