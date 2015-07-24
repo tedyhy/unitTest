@@ -147,8 +147,52 @@ var returnedNode = someNode.removeChild(someNode.firstNode);
 //移除最后一个子节点
 var returnedNode = someNode.removeChild(someNode.lastNode);
 
+12)有两个方法是所有类型的节点都有的
+	·cloneNode
+	接受一个Boolean参数，执行深复制，也就是复制节点及其整个子节点树。在参数为 false 的情况下,执行浅复制, 即只复制节点本身。
+	<!-- html -->
+	<ul>
+        <li>item 1</li>
+        <li>item 2</li>
+        <li>item 3</li>
+	</ul>
+	<!-- js -->
+	var deepList = myList.cloneNode(true);
+	console.log(deepList.childNodes.length); // 3(IE8-) 或 7(其他标准浏览器);
+	var shallowList = myList.cloneNode();
+	console.log(shallowList.childNodes.length); // 0
+	// IE8-(IE8及以前)不会为空白符创建节点。
+	// cloneNode方法不会复制添加到DOM节点中的Javascript属性，如事件处理程序，
+	// 这个方法只复制特性、子节点，其他一切都不会复制，IE在此有个bug，它会复制事件处理程序，
+	// 所以建议在复制前先移除事件处理程序。
+
+	·normalize
+	此方法唯一用处就是处理文档树中的文本节点。
+	由于解析器的实现或 DOM 操作等原因,可能会出现文本节点不包含文本,或者接连出现两个文本节点的情况。
+	当在某个节点上调用这个方法时,就会在该节点的后代节点中查找上述两种情况。如果找到了空文本节点,则删除它;如果找到相邻的文本节点,则将它们合并为一个文本节点。
 </textarea>
 <h4>Document类型</h4>
+<p>
+	1.文档子节点<br>
+	document.doctype; // &lt;!DOCTYPE&gt;节点引用<br>
+	document.docuemntElement; // &lt;html&gt;节点引用<br>
+	document.body; // &lt;body&gt;节点引用<br>
+	由于浏览器对 document.doctype 的支持不一致,因此这个属性的用处很有限，如图2。<br>
+	2.文档信息
+</p>
+<textarea class="codemirror">
+1)document.title （可读写）
+2)对网页请求有关
+document.URL 地址栏中显示的URL （只读）
+docment.domain 只包含页面的域名 （可读写）
+document.referrer 保存着链接到当前页面的那个页面的URL （只读）
+
+所有这些信息都存在于请求的 HTTP 头部,只不过是通过这些属性让我们能够在 JavaScript 中访问它们而已。
+document.domain 不能被设置成URL中不包含的域，如图3。
+</textarea>
+
+
+
 <h4>Element类型</h4>
 <h4>Text类型</h4>
 <h4>Comment类型</h4>
@@ -173,6 +217,10 @@ var returnedNode = someNode.removeChild(someNode.lastNode);
 <script src="../js/base.js"></script>
 <p>图1</p>
 <img src="../img/childNodes.png" alt="">
+<p>图2</p>
+<img src="../img/doctype_compatible.png" alt="">
+<p>图3</p>
+<img src="../img/document.domain.png" alt="">
 <p>参考：</p>
 1.<a href="#" target="_blank"></a><br>
 </body>
