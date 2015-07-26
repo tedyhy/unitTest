@@ -190,10 +190,108 @@ document.referrer 保存着链接到当前页面的那个页面的URL （只读�
 所有这些信息都存在于请求的 HTTP 头部,只不过是通过这些属性让我们能够在 JavaScript 中访问它们而已。
 document.domain 不能被设置成URL中不包含的域，如图3。
 </textarea>
+<p>
+	3.查找元素
+</p>
+<textarea class="codemirror">
+1.document.getElementById
+id严格区分大小写，但是ie8-不区分大小写。ie7-还有个怪癖：
+name特性与给定ID匹配的表单元素􏴰􏴱􏰉􏲜􏱃􏰟􏰠􏲉input、textarea、button、select也会被该方法返回。􏱅􏱺􏵐􏵑
+为了避免ie中的这个bug，最好不让表单name的值与其他元素的id值相同。
 
+2.document.getElementsByTagName
+返回动态集合HTMLCollection，与NodeList对象类似。
+var images = document.getElementsByTagName('img');
+console.log(images[0].src);
+console.log(images.item(0).src);
+console.log(images.namedItem('myImage').src);
+console.log(images['myImage']);
+// IE将注释实现为元素，因此在IE中调用document.getElementsByTagName('*')会包含注释节点。
 
-
+3.document.getElementsByName
+namedItem()􏰻􏲆􏳈􏱦􏱖􏲫方法只会获取第一项（因为每一项的name值都相同）。
+</textarea>
+<p>
+	4.特殊集合
+</p>
+<textarea class="codemirror">
+document.anchors 文档中所有带name特性的a标签元素。
+document.forms 文档中所有form元素。
+document.images 文档中所有img元素。
+document.links 文档中所有带href特性的a标签元素。
+</textarea>
+<p>
+	5.文档写入
+</p>
+<textarea class="codemirror">
+将输出流写入到网页中的能力。
+docuemnt.write
+document.writeln
+document.open
+document.close
+</textarea>
 <h4>Element类型</h4>
+<textarea class="codemirror">
+var div = document.getElementById('div');
+console.log(div.nodeName === div.tagName); // true
+// HTML中标签名始终以全部大写表示，XML以源代码中为准
+console.log(div.tagName.toLowerCase() === 'div'); // true
+
+1.取得特性
+操作特性的DOM方法主要有3个：setAttribute、getAttribute、removeAttribute。
+传递给getAttribute方法的特性名与实际的特性名要一致。如：
+div.getAttribute('class');
+div.className;通过对象属性访问特性。
+特性的名称不区分大小写。
+ie6-不支持removeAttribute方法。
+
+//ie6/7中特殊处理
+//ie7-，setAttribute存在bug，通过这个方法设置class、style特性，没有任何效果，
+//设置事件处理程序的时候也是一样。
+var dom = (function() {
+    var fixAttr = {
+        tabindex: 'tabIndex',
+        readonly: 'readOnly',
+        'for': 'htmlFor',
+        'class': 'className',
+        maxlength: 'maxLength',
+        cellspacing: 'cellSpacing',
+        cellpadding: 'cellPadding',
+        rowspan: 'rowSpan',
+        colspan: 'colSpan',
+        usemap: 'useMap',
+        frameborder: 'frameBorder',
+        contenteditable: 'contentEditable'
+    },
+    div = document.createElement('div');
+    div.setAttribute('class', 't');
+    var supportSetAttr = div.className === 't';
+    return {
+        setAttr : function(el, name, val) {
+            el.setAttribute(supportSetAttr ? name : (fixAttr[name] || name), val);
+        },
+        getAttr : function(el, name) {
+            return el.getAttribute(supportSetAttr ? name : (fixAttr[name] || name));
+        }
+    }
+})();
+
+
+2.两类特殊的特性
+它们虽然有对应的属性名称，但属性的值与通过getAttribute返回的值不一致。
+1)style
+通过属性访问返回的是对象，通过getAttribute返回的是css文本。
+2)类似onclick的事件处理程序
+通过属性访问返回一个javascript函数。通过getAttributte返回的是相应代码的字符串。
+
+
+
+</textarea>
+
+
+
+
+
 <h4>Text类型</h4>
 <h4>Comment类型</h4>
 <h4>CDATASection类型</h4>
