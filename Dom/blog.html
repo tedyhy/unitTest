@@ -177,6 +177,8 @@ var returnedNode = someNode.removeChild(someNode.lastNode);
 	document.doctype; // &lt;!DOCTYPE&gt;节点引用<br>
 	document.docuemntElement; // &lt;html&gt;节点引用<br>
 	document.body; // &lt;body&gt;节点引用<br>
+	document.head; // ie6/7/8不支持，其他标准浏览器支持。
+	// var head = document.head || document.getElementsByTagName('head')[0];
 	由于浏览器对 document.doctype 的支持不一致,因此这个属性的用处很有限，如图2。<br>
 	2.文档信息
 </p>
@@ -285,13 +287,63 @@ var dom = (function() {
 通过属性访问返回一个javascript函数。通过getAttributte返回的是相应代码的字符串。
 
 
+3.attributes属性
+Element类型是使用attributes属性的唯一一个DOM节点类型。
+attributes属性中包含一个动态的NamedNodeMap集合，类似NodeList。
+集合中包含一系列节点（特性节点），每个节点的nodeName就是特性名称，nodeValue就是特性的值。
+NamedNodeMap对象包含下列方法：
+1)getNamedItem
+var id = ele.attributes.getNamedItem('id').nodeValue;
+var id = ele.attributes['id'].nodeValue;
+2)setNamedItem 不常用
+ele.attributes.setNamedItem(newAttr);
+ele.attributes['id'].nodeValue = "someOtherId";
+3)removeNamedItem
+var oldAttr = ele.attributes.removeNamedItem('id');
+4)item
+ele.attributes.item(0).nodeName;
 
+// 遍历attributes属性中的特性时，顺序不确定。
+// ie7-中attributes会返回HTML元素中所有可能的特性。然而，每个特性节点都有一个属性specified。
+// specified为true时，说明特性要么是在HTML中指定了，要么是通过setAttribute方法设置了此特性。
+// IE中所有未设置过的特性的specified值都为false。
+//兼容代码如下
+function outputAttributes(ele){
+	var pairs = new Array(),
+		attr,
+        attrName,
+        attrValue,
+        i,
+        len;
+    for (i = 0, len = ele.attributes.length; i < len; i++) {
+    	attr = ele.attributes[i];
+		attrName = attr.nodeName;
+		attrValue = attr.nodeValue;
+		if (attr.specified) {
+			pairs.push(attrName + "=\"" + attrValue + "\"");
+		}
+    }
+    return pairs.join(" ");
+}
+
+4.创建元素
+var div = document.createElement('div'); //元素名称不区分大小写，但是在xml中区分。
+通过此方法创建元素的同时，也为此元素设置了ownerDocument属性。
+
+div.id = "myid";
+div.className = "newid";
+
+5.元素的子节点
+<ul id="myList">
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+</ul>
+IE下解析：3个子节点，3个<li>元素。
+其他浏览器下：7个子节点，3个<li>元素和4个空白文本节点。
+如果是下面的方式，所有浏览器下返回子节点数目一致。
+<ul id="myList"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>
 </textarea>
-
-
-
-
-
 <h4>Text类型</h4>
 <h4>Comment类型</h4>
 <h4>CDATASection类型</h4>
