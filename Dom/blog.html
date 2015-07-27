@@ -518,6 +518,43 @@ function loadScriptString(code){
 }
 loadScriptString("function sayHi(){alert('hi');}");
 </textarea>
+<h4>动态样式</h4>
+<textarea class="codemirror">
+1.&lt;link&gt;元素包含来自外部的样式文件
+<link type="text/css" href="styles.css" rel="sheetstyle" />
+function loadStyles(url){
+	var link = document.createElement('link');
+	link.type = "text/css";
+	link.href = url;
+	link.rel = "sheetstyle";
+	var head = document.head || document.getElementsByTagName('head')[0];
+	head.appendChild(link);
+}
+loadStyles("styles.css");
+2.&lt;style&gt;用于指定嵌入的样式
+<style type="text/css">
+    body {
+        background-color: red;
+    }
+</style>
+
+同script元素一样，如下：
+function loadStyleString(css){
+	var style = document.createElement('style');
+	style.type = "text/css";
+	try{
+		style.appendChild(document.createTextNode(css));
+	}catch(e){
+		style.styleSheet.cssText = css;
+	}
+	var head = document.head || docment.getElementsByTagName('head')[0];
+	head.appendChild(style);
+};
+loadStyleString('body{background-color:red;}');
+
+注意：如果针对IE编码，务必小心使用styleSheet.cssText属性。在重用同一个<style>元素并在此设置这个
+属性时，有可能会导致浏览器崩溃。同样，将cssText属性设置为空字符串也可能导致浏览器崩溃。
+</textarea>
 <br>
 <br>
 <br>
