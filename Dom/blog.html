@@ -345,20 +345,179 @@ IE下解析：3个子节点，3个<li>元素。
 <ul id="myList"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>
 </textarea>
 <h4>Text类型</h4>
-<h4>Comment类型</h4>
-<h4>CDATASection类型</h4>
-<h4>DocumentType类型</h4>
-<h4>DocumentFragment类型</h4>
-<h4>Attr类型</h4>
 <p>
-	
+	1.操作文本节点的方法
 </p>
 <textarea class="codemirror">
+nodeName "#text"
+nodeValue
 
+1.appendData(text)
+2.deleteData(offset, count)
+3.insertData(offset, text)
+4.replaceData(offset, count, text)
+5.splitText(offset)
+6.substringData(offset, count)
+
+
+var textNode = div.firstChild; // 或 div.childNodes[0]
+div.firstChild.nodeValue = "some text";
 </textarea>
+<p>
+	2.创建文本节点
+</p>
+<textarea class="codemirror">
+1.document.createTextNode
+var textNode = document.createTextNode('<strong>ddddddddddd</strong>');
+创建textNode的同时，也为其设置了ownerDocument属性。
+
+var ele = doucment.createElement('div');
+ele.className = "message";
+var textNode = document.createTextNode('Hello World!');
+ele.appendChild(textNode);
+document.body.appendChild(ele);
 
 
+2.一般情况下，一个元素只有一个文本节点。不过，某些情况下会包含多个文本子节点。
+var ele = document.createElement('div');
+ele.className = "message";
+var textNode = document.createTextNode('Hello World!');
+ele.appendChild(textNode);
+var anotherTextNode = document.createTextNode('Yippee!');
+ele.appendChild(anotherTextNode);
+document.body.appendChild(ele);
+如果两个文本节点是相邻的同胞节点，那么两个节点中的文本就会连接起来显示，中间不会有空格。
+</textarea>
+<p>
+	3.规范化文本节点
+</p>
+<textarea class="codemirror">
+在一个包含多个文本节点的元素上调用normalize()方法，则会将所有文本节点合并成一个文本节点。
+nodeValue值为多个文本节点合并前每个文本节点的nodeValue值拼接起来的值。
+var ele = document.createElement('div');
+ele.className = "message";
+var textNode = document.createTextNode('Hello World!');
+ele.appendChild(textNode);
+var anotherTextNode = document.createTextNode('Yippee!');
+ele.appendChild(anotherTextNode);
+document.body.appendChild(ele);
+console.log(ele.childNodes.length); // 2
+ele.normalize();
+console.log(ele.childNodes.length); // 1
+console.log(ele.firstChild.nodeValue); // 'Hello World!Yippee!'
+</textarea>
+<p>
+	4.分割文本节点
+</p>
+<textarea class="codemirror">
+将一个文本节点分割成两个文本节点
+var div = document.createElement('div');
+div.className = "message";
+var textNode = document.createTextNode('Hello World!');
+div.appendChild(textNode);
+var newTextNode = div.firstChild.splitText(5);
+console.log(div.firstChild.nodeValue); // "Hello"
+console.log(newTextNode.nodeValue); // " World!"
+console.log(div.childNodes.length); // 2
+</textarea>
+<h4>Comment类型</h4>
+<textarea class="codemirror">
+nodeName "#comment"
+nodeValue 注释内容
 
+Comment类型与Text类型继承自同一基类，因此支持（除了splitText方法外的）所有其他字符串操作方法。
+可以通过nodeValue、data属性获取注释内容。
+
+<div id="myDiv"><!-- A comment --></div>
+var div = document.getElementById('myDiv');
+var comment = div.firstChild;
+console.log(comment.nodeValue); // "A comment"
+console.log(comment.data); // "A comment"
+
+var comment = document.createComment("A comment");
+</textarea>
+<h4>CDATASection类型</h4>
+<textarea class="codemirror">
+CDATASection类型只针对基于XML的文档，表示CDATA区域。与Comment类型相似，也继承自Text类型。
+因此拥有除splitText之外的所有字符串操作方法。
+nodeName "#cdata-section"
+nodeValue CDATA区域的内容
+大多数浏览器都会错误的把CDATA区域解析为Comment或Element。
+</textarea>
+<h4>DocumentType类型</h4>
+<textarea class="codemirror">
+DocumentType类型在Web浏览器中并不常用。支持它的浏览器会把DocumentType对象保存在document.doctype
+中。
+IE及更早浏览器不支持DocumentType，因此document.doctype === null。
+</textarea>
+<h4>DocumentFragment类型</h4>
+<textarea class="codemirror">
+nodeName "#document-fragment"
+nodeValue null
+虽然不能把文档片段直接添加到文档中，但可以把它作为一个『仓库』使用，即在里面保存将来可能会添加到文档中的
+节点。
+document.createDocumentFragment()
+var fragment = document.createDocumentFragment();
+
+<ul id="myList"></ul>
+var fragment = document.createDocumentFragment();
+var ul = document.getElementById('myList');
+var li = null;
+for (var i = 0;i < 3;i++) {
+	li = document.createElement('li');
+	li.appendChild(document.createTextNode('Item ' + (i + 1)));
+	fragment.appendChild(li);
+}
+ul.appendChild(fragment);
+</textarea>
+<h4>Attr类型</h4>
+<p>
+	元素的特性在DOM中以Attr类型来表示。<br>
+	特性就是存在与元素的attributes属性中的节点。
+</p>
+<textarea class="codemirror">
+1.常用方法
+建议使用getAttribute、setAttribute、removeAttribute方法，不建议直接访问特性节点。
+</textarea>
+<h2>DOM操作技术</h2>
+<h4>动态脚本</h4>
+<textarea class="codemirror">
+1.创建动态脚本的两种方法
+1)引入外部脚本文件
+&lt;script type="text/javascript" src="client.js"&gt;&lt;/script&gt;
+或
+var script = document.createElement('script');
+script.type = "text/javascript";
+script.src = "client.js";
+script.onreadystatechange = script.onload = function(){
+	if (!this.readyState || (this.readyState === 'loaded' || this.readyState === 'complete')) {
+		// todo...
+		this.onreadystatechange = this.onload = null;
+	};
+};
+document.body.appendChild(script);
+2)直接插入脚本代码
+&lt;script type="text/javascript"&gt;
+	function sayHi() {
+		alert("Hi");
+	}
+&lt;/script&gt;
+
+function loadScriptString(code){
+	var script = document.createElement('script');
+	script.type = "text/javascript";
+	try {
+		// IE中会导致错误，它将script视为一个特殊的元素，不允许DOM访问其子节点。
+		// 不过可以用script元素的属性text来指定javascript代码。
+		// safari 3.0-虽然不能正确支持text属性，但是可以使用文本节点技术。
+		script.appendChild(document.createTextNode(code));
+	}catch(e){
+		script.text = code;
+	};
+	document.body.appendChild(script);
+}
+loadScriptString("function sayHi(){alert('hi');}");
+</textarea>
 <br>
 <br>
 <br>
