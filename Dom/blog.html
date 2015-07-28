@@ -555,6 +555,136 @@ loadStyleString('body{background-color:red;}');
 注意：如果针对IE编码，务必小心使用styleSheet.cssText属性。在重用同一个<style>元素并在此设置这个
 属性时，有可能会导致浏览器崩溃。同样，将cssText属性设置为空字符串也可能导致浏览器崩溃。
 </textarea>
+<h4>操作表格</h4>
+<textarea class="codemirror">
+1.使用核心DOM方法创建、修改表格
+<table border="1" width="100%">
+    <tbody>
+		<tr>
+			<td>Cell 1,1</td>
+            <td>Cell 2,1</td>
+        </tr>
+        <tr>
+            <td>Cell 1,2</td>
+            <td>Cell 2,2</td>
+        </tr>
+    </tbody>
+</table>
+//创建table
+var table = document.createElement('table');
+table.border = 1;
+table.width = "100%";
+//创建tbody
+var tbody = document.createElement('tbody');
+table.appendChild(tbody);
+//创建第一行
+var row1 = document.createElement('tr');
+var cell1_1 = document.createElement('td');
+var cell2_1 = document.createElement('td');
+cell1_1.appendChild(document.createTextNode("Cell 1,1"));
+cell2_1.appendChild(document.createTextNode("Cell 2,1"));
+row1.appendChild(cell1_1);
+row1.appendChild(cell2_1);
+tbody.appendChild(row1);
+//创建第二行
+var row2 = document.createElement('tr');
+var cell1_2 = document.createElement('td');
+var cell2_2 = document.createElement('td');
+cell1_2.appendChild(document.createTextNode("Cell 1,2"));
+cell2_2.appendChild(document.createTextNode("Cell 2,2"));
+row2.appendChild(cell1_2);
+row2.appendChild(cell2_2);
+tbody.appendChild(row2);
+
+document.body.appendChild(table);
+
+2.为了简便之，HTML DOM为<table>、<tbody>、<tr>添加了属性和方法
+1)table
+属性：
+caption
+tHead
+tFoot
+tBodies 	HTMLCollection
+rows 		HTMLCollection
+方法：
+createCaption()
+createTHead()
+createTFoot()
+deleteCaption()
+deleteTHead()
+deleteTFoot()
+deleteRow(pos)
+insertRow(pos)
+2)tbody
+属性：
+rows 		HTMLCollection
+方法：
+insertRow(pos)
+deleteRow(pos)
+3)tr
+属性：
+cells 		HTMLCollection
+方法：
+insertCell(pos)
+deleteCell(pos)
+
+利用这些属性和方法可以极大减少创建表格所需的代码量。
+//创建table
+var table = document.createElement('table');
+table.border = 1;
+table.width = "100%";
+//创建tbody
+var tbody = document.createElement('tbody');
+table.appendChild(tbody);
+//创建第一行
+tbody.insertRow(0);
+tbody.rows[0].insertCell(0);
+tbody.rows[0].insertCell(1);
+tbody.rows[0].cells[0].appendChild(document.createTextNode("Cell 1,1"));
+tbody.rows[0].cells[1].appendChild(document.createTextNode("Cell 2,1"));
+//创建第二行
+tbody.insertRow(1);
+tbody.rows[1].insertCell(0);
+tbody.rows[1].insertCell(1);
+tbody.rows[1].cells[0].appendChild(document.createTextNode("Cell 1,2"));
+tbody.rows[1].cells[1].appendChild(document.createTextNode("Cell 2,2"));
+document.body.appendChild(table);
+</textarea>
+<h4>使用NodeList</h4>
+<textarea class="codemirror">
+理解NodeList、NamedNodeMap、HTMLCollection，是从整体上透彻理解DOM的关键所在。
+这三个集合都是动态的，每当文档结构发生变化，它们都会得到更新，因此，它们始终保持这最新、最准确的信息。
+下面代码会导致无限循环：
+var divs = document.getElementsByTagName('div'),
+	i, div;
+for (i = 0; i < divs.length; i++) {
+	div = document.createElement('div');
+	document.body.appendChild(div);
+}
+
+最好将HTMLCollection集合的长度保存下来：
+var divs = document.getElementsByTagName('div'),
+	len = divs.length,
+	i, div;
+for (i = 0; i < len; i++) {
+	div = document.createElement('div');
+	document.body.appendChild(div);
+}
+
+总结：应该尽量减少访问NodeList的次数，因为每次访问都是基于文档的查询，最好减少DOM操作。
+</textarea>
+
+
+
+
+
+
+
+
+
+
+
+
 <br>
 <br>
 <br>
