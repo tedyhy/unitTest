@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Dom</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>Dom扩展</h1>
+<p>
+	对DOM的两个主要扩展是selectors API 和 HTML5。
+</p>
+<h2>选择符API</h2>
+<p>
+	<a href="http://www.w3.org/TR/selectors-api/">Selectors API</a>是由W3C发起指定的一个标准，致力于让浏览器原生支持CSS查询。
+</p>
+<textarea class="codemirror">
+1.Selectors API Level 1的核心方法
+1)querySelector()		第一个元素
+2)querySelectorAll() 	NodeList对象实例
+参数：css选择符
+返回值：与该模式匹配的元素，否则返回null。
+
+var body = document.querySelector('body');
+var myDiv = document.querySelector('#myDiv');
+var selected = documnt.querySelector('.selected');
+var img = document.querySelector('img.button');
+
+var ems = document.getElementById('myDiv').querySelectorAll('em');
+var selecteds = document.querySelectorAll('.selected');
+var strongs = document.querySelectorAll('p strong');
+
+如果传入了浏览器不支持的选择符或者选择符中有语法错误，方法会报错。
+注释：
+目前已完全支持Selectors API Level 1的浏览器有IE8+、􏱯Firefox3.5+、􏱯Safari3.1+、􏱯Chrome和Opera10+。
+</textarea>
+<h4>与类相关的扩充</h4>
+<textarea class="codemirror">
+1.getElementsByClassName方法
+返回带有指定类的所有元素的NodeList。传入多个类名时，类名的先后顺序不重要。
+var allCurrentUsers = document.getElementsByClassName('username current');
+var selected = document.getElementById('myDiv').getElementsByClassName('selected');
+
+支持getElementsByClassName方法的浏览器有：IE9+、Firefox3+、􏱯Safari3.1+、􏱯Chrome和Opera9.5+。
+
+2.classList属性
+HTML5新增了一种操作类名的方式，可以更安全简单的操作类，因此为所有元素都添加了classList属性。
+这个classList属性是新集合类型DOMTokenList的实例，与DOM集合类似。
+属性：length
+方法：
+item(pos)
+add(value)
+contains(value)
+remove(value)
+toggle(value)
+
+<div class="user"></div>
+div.classList.remove("user");
+div.classList.add("current");
+div.classList.toggle("user");
+if (!div.classList.contains("user") && !div.classList.contains("disabled")) {
+	// todo...
+}
+for (var i = 0, len = div.classList.length; i < len; i++) {
+	console.log(div.classList[i]);
+}
+
+支持classList属性的浏览器有：Firefox3.6+、Chrome。
+</textarea>
+<h4>焦点管理</h4>
+<textarea class="codemirror">
+1.document.activeElement
+此属性始终会引用当前文档DOM中获取焦点的元素。
+
+var button = document.getElementById('mybutton');
+button.focus();
+console.log(document.activeElement === button); // true
+
+默认情况下，文档刚加载完成时，document.activeElement中保存的是document.body元素的引用。
+文档加载期间，document.activeElement为null。
+
+2.document.hasFocus()
+用于确定文档是否获取了焦点。
+
+var button = document.getElementById('mybutton');
+button.focus();
+console.log(button.hasFocus()); // true
+
+支持上述两个属性方法的浏览器有：IE 4+􏱯、Firefox 3+􏱯、Safari 4+、􏱯Chrome、Opera 8+。
+</textarea>
+<h4>HTMLDocument的变化</h4>
+<textarea class="codemirror">
+1.readyState属性
+document.readyState有两个可能的值：loading（正在加载文档）、complete（文档加载完毕）。
+此属性可以用来判断一个文档是否加载完毕。
+
+if (document.readyState === 'complete') {
+	//todo ...
+}
+
+支持此属性的浏览器有：IE 4+􏱯、Firefox 3.6+􏱯、Safari、􏱯Chrome、Opera 9+。
+
+2.对于文档加载完毕判断总结
+ie6~8可以使用document.onreadystatechange事件监听document.readyState状态
+是否等于complete来判断DOM是否加载完毕，如果页面中嵌有iframe的话，
+ie6~8的document.readyState会等到iframe中的所有资源加载完才会变成complete，此时iframe变成了耗时大户。
+但是经过测试，即使页面中没有iframe，当readyState等于complete时，实际触发的是onload事件而不是DOMContentLoaded事件。
+背景：
+我们在写js代码的时候，一般都会添加window.onload事件，主要是为了在DOM加载完后可以使用getElementById，
+getElementsByTagName等方法选取DOM元素进行操作，但是window.load会等到加载完DOM、脚本、CSS，
+最后加载完图片甚至是iframe中的所有资源才会触发，很多时候网页的图片较多较大，
+要等最后图片这个耗时大户加载完才执行js明显有些太迟了，很多时候都会影响用户体验。
+
+Dom ready的核心是DOMContentLoaded事件，firefox、chrome、opera、safari、ie9+都可以使用addEventListener('DOMContentLoaded',fn,false)
+进行事件绑定，而ie6~8不支持DOMContentLoaded事件，所以要针对ie6~8做兼容性处理。
+还好ie有个特有的doScroll方法，当页面DOM未加载完成时，调用doScroll方法时，就会报错，
+反过来，只要一直间隔调用doScroll直到不报错，那就表示页面DOM加载完毕了，不管图片和iframe中的内容是否加载完毕，此法都有效。
+
+参考：
+http://www.111cn.net/wy/js-ajax/59517.htm
+http://javascript.nwbox.com/IEContentLoaded
+</textarea>
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<script src="../js/base.js"></script>
+<p>参考：</p>
+1.<a href="#" target="_blank"></a><br>
+</body>
+
+</html>
