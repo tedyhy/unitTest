@@ -129,8 +129,133 @@ Dom ready的核心是DOMContentLoaded事件，firefox、chrome、opera、safari�
 参考：
 http://www.111cn.net/wy/js-ajax/59517.htm
 http://javascript.nwbox.com/IEContentLoaded
-</textarea>
+示例源码如下：
+(function() {
+    //保存domReady的事件队列
+    var eventQueue = [];
 
+    //判断DOM是否加载完毕
+    var isReady = false;
+
+    //判断DOMReady是否绑定
+    var isBind = false;
+
+    /*执行domReady()
+     *@param    {function}
+     *@execute  将事件处理程序压入事件队列,并绑定DOMContentLoaded
+     *          如果DOM加载已经完成，则立即执行
+     *@caller
+     */
+    function domReady = function(fn) {
+        if (isReady) {
+            fn.call(window);
+        } else {
+            eventQueue.push(fn);
+        };
+
+        bindReady();
+    };
+
+    /*domReady事件绑定
+     *@param    null
+     *@execute  现代浏览器通过addEvListener绑定DOMContentLoaded,包括ie9+
+                ie6-8通过判断doScroll判断DOM是否加载完毕
+     *@caller   domReady()
+     */
+    function bindReady = function() {
+        if (isReady) return;
+        if (isBind) return;
+        isBind = true;
+
+        if (window.addEventListener) {
+            document.addEventListener('DOMContentLoaded', execFn, false);
+        } else if (window.attachEvent) {
+            doScroll();
+        };
+    };
+
+    /*doScroll判断ie6-8的DOM是否加载完成
+     *@param    null
+     *@execute  doScroll判断DOM是否加载完成
+     *@caller   bindReady()
+     */
+    function doScroll = function() {
+        try {
+            document.documentElement.doScroll('left');
+        } catch (error) {
+            return setTimeout(doScroll, 20);
+        };
+        execFn();
+    };
+
+    /*执行事件队列
+     *@param    null
+     *@execute  循环执行队列中的事件处理程序
+     *@caller   bindReady()
+     */
+    function execFn = function() {
+        if (!isReady) {
+            isReady = true;
+            for (var i = 0, len = eventQueue.length; i < len; i++) {
+                eventQueue[i].call(window);
+            };
+            eventQueue = [];
+        };
+    };
+
+    window.domReady = domReady;
+})();
+
+//js文件1
+domReady(function() {
+    //...
+});
+//js文件2
+domReady(function() {
+    //...
+});
+
+
+3.IE兼容模式
+自从IE6开始区分渲染模式是标准还是混杂的，检测页面兼容模式非常必要。
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+IE用document.compatMode属性判断页面兼容模式。
+if (document.compatMode === 'CSS1Compat') {
+	console.log("Standards mode!");
+} else if (document.compatMode === 'BackCompat') {
+	console.log("Quirks mode!");
+}
+
+后续Firefox、Safari 3.1+、Opera、Chrome也陆续实现了这个属性。最终HTML5将其纳入标准。
+
+4.head属性
+HTML5 新增 document.head属性。
+var head = document.head || document.getElementsByTagName('head')[0];
+</textarea>
+<h4>字符集属性</h4>
+<p>
+document.charset<br/>
+支持此属性的有：IE、Firefox、Safari、Opera和Chrome。
+</p>
+<h4>自定义数据属性</h4>
+<textarea class="codemirror">
+自定义的数据属性可以随意添加、命名，只要以"data-"开头即可。
+添加了自定义属性后，可以通过元素的dataset属性来访问自定义属性的值。
+dataset属性值是DOMStringMap的一个实例。也即键值对映射。
+<div id="myDiv" data-appId="2525" data-myname="ted"></div>
+
+var div = document.getElementById('myDiv');
+var appId = div.dataset.appId;
+var myname = div.dataset.myname;
+
+div.dataset.myname = "tedyhy";
+
+支持此属性的浏览器有：Firefox 6+、Chrome。
+</textarea>
+<h4>插入标记</h4>
+<textarea class="codemirror"></textarea>
 
 
 
