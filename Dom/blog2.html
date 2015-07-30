@@ -309,8 +309,76 @@ ele.insertAdjacentHTML("afterend", "<p>Hello World!</p>");
 document.form[0].scrollIntoView();
 支持scrollIntoView方法的浏览器有：IE、Firefox、Safari、Opera、Chrome。
 </textarea>
+<h2>专有扩展</h2>
+<h4>文档模式、children属性、contains方法、compareDocumentPosition方法、插入文本</h4>
+<textarea class="codemirror">
+1.文档模式属性
+IE8引入了『文档模式』，支持document.documentMode
+此属性可以判定当前文档模式。
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+2.children属性
+IE8-中对处理文本节点里的空白符有差异。
+children只获取节点里的元素子节点，不包括文本节点。
+childNodes获取节点里的所有子节点，包括文本节点。
+
+支持children属性的浏览器有：IE5􏲂、Firefox 3.5􏲂、（Safari 2􏰱􏲯有bug􏰲􏲂）、Safari 3􏰱􏲰􏲱􏲮􏱎􏰲􏲂（完全支持）、Opera8、Chrome􏰱所有版本􏰲。
+
+3.contains()方法
+检测祖先节点中是否包含某个节点。
+console.log(document.documentElement.contains(document.body)); // true
+
+支持此方法的浏览器有：IE􏲂、Firefox 9+、􏲂Safari、􏲂Opera、Chrome。
+
+4.compareDocumentPosition()方法
+确定两节点间关系。DOM3方法。
+支持此方法的浏览器有：IE9+􏲂、Firefox􏲂、Safari􏲂、Opera 9.5+􏲲、Chrome。</textarea>
+<img src="../img/comparedocumentposition.png">
+<textarea class="codemirror">
+function contains(refNode, otherNode){
+	var node;
+	if (typeof refNode.contains === 'function' &&
+			// webkit版本号小于522的safari浏览器中contains方法不能正常使用。
+			// 至少是safari 3（webkit版本号大于等于522的浏览器）能正常使用contains方法。
+			(!client.engine.webkit || client.engine.webkit >= 522)) {
+		return refNode.contains(otherNode);
+	} else if (typeof refNode.compareDocumentPosition === 'function') {
+		return !!(refNode.compareDocumentPosition(otherNode) & 16);
+	} else {
+		// 针对旧版本safari做的兼容方案
+		node = otherNode.parentNode;
+		do {
+			if (node === refNode){
+				return true;
+			} else {
+				node = node.parentNode;
+			}
+		} while(node);
+		return false;
+	}
+}
+
+5.插入文本
+innerText、outerText还没被纳入HTML5标准。
+1)innerText属性（可读写）
+只返回文本内容，不包括元素。
+
+注意：Firefox下不支持，但是可以使用textContent代替。如下兼容代码：
+function getInnerText(ele){
+	return typeof ele.innerText === 'string'?ele.innerText:ele.textContent;
+};
+function setInnerText(ele, text){
+	return typeof ele.innerText === 'string'?(ele.innerText = text):(ele.textContent = text);
+}
+
+2)outerText属性（可读写）
+读取模式下，与innerText结果一致；写模式下，调用的元素也会被替换掉。相当于：
+var text = document.createTextNode('Hello World!');
+div.parentNode.replaceChild(text, div);
 
 
+上述两个属性支持的浏览器有：IE4+􏲂、Safari 3+􏲂、Opera 8+􏲲、Chrome。
+</textarea>
 
 
 
