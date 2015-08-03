@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Dom</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>DOM2 和 DOM3</h1>
+<h2>Dom 变化</h2>
+<textarea class="codemirror">
+DOM1级主要定义的是 HTML 和 XML 文档的底层结构。
+DOM2 和 DOM3 级则在这个结构的基础上引入了更多的交互能力，也支持了更高级的 XML 特性。
+DOM2 和 DOM3 级目的就是在于满足操作 XML 的所有需求。
+</textarea>
+<h4>针对 XML 命名空间的变化</h4>
+<textarea class="codemirror">
+有了XML命名空间，不同XML文档的元素就可以混合在一起，不必担心命名冲突。
+HTML 不支持 XML 命名空间，但 XHTML 支持 XML 命名空间。
+在只基于一种语言编写 XML 文档的情况下，命名空间实际上也没什么用。不过，在混合使用两种语言的情况下，
+命名空间的用处就非常大了。
+</textarea>
+<h4>框架的变化</h4>
+<textarea class="codemirror">
+框架和内嵌框架分别用 HTMLFrameElement 和 HTMLIFrameElement 表示，它们在 DOM2级中都有了一个新属性，名叫contentDocument。
+这个属性包含一个指针，指向表示框架内容的文档对象Document。
+
+var iframe = document.getElementById("myIframe");
+var iframeDoc = iframe.contentDocument; // IE8之前无效
+IE9+、Opera、Firefox、Safari 和 Chrome 支持这个属性。
+
+IE8-支持另外一个属性contentWindow，该属性返回框架的Window对象。所有浏览器都支持 contentWindow 属性。
+
+兼容性代码：
+var iframe = document.getElementById('myIframe');
+var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+</textarea>
+<h2>样式</h2>
+<textarea class="codemirror">
+1.访问元素的样式
+CSS属性               JavaScript属性
+background-image      style.backgroundImage
+color                 style.color
+display               style.display
+font-family           style.fontFamily
+
+float
+float是javascript中的保留字，因此不能作为属性名，相应的属性名为 cssFloat。但是IE支持的是 styleFloat。
+var myDiv = document.getElementById('myDiv');
+myDiv.style.backgroundColor = "red";
+myDiv.style.width = "100px";
+myDiv.style.height = "200px";
+myDiv.style.border = "1px solid black";
+
+在标准模式下，所有度量值都必须指定一个度量单位。
+
+console.log(myDiv.style.backgroundColor); // "red"
+console.log(myDiv.style.width); // "100px"
+console.log(myDiv.style.border); // "1px solid black"
+
+注意：
+如果没有为元素设置 style 特性，那么 style 对象中可能会包含一些默认的值，但这些值并不能准确地反映该元素的样式信息。
+
+
+2.DOM样式属性和方法（这些属性和方法必须是在设置了相应的style属性情况下使用）
+cssText
+length
+getPropertyValue(propertyName)
+item(index)
+removeProperty(propertyName)
+setProperty(propertyName, value, priority) priority优先权，即“!important”
+
+1)
+myDiv.style.cssText = "width: 25px;height: 100px;background-color: green;";
+2)
+var value;
+for (var i = 0, len = myDiv.style.length; i < len; i++) {
+    console.log(myDiv.style[i]); // 或 console.log(myDiv.style.item(i));
+    value = myDiv.style.getPropertyValue(myDiv.style[i]);
+    console.log(prop + ": " + )
+}
+3)myDidv.style.removeProperty("border");
+
+注意：这些属性和方法都是IE9+、Firefox、Safari、Opera 9+以及 Chrome 支持的。IE8-支持cssText属性。
+
+
+
+3.计算的样式
+虽然 style 对象能够提供支持 style 特性的任何元素的样式信息，但它不包含那些从其他样式表层叠而来并影响到当前元素的样式信息。
+“DOM2 级样式”增强了 document.defaultView，
+提供了getComputedStyle()方法。这个方法接受两个参数：要取得计算样式的元素和一个伪元素字符串（例如":after"）。
+如果不需要伪元素信息，第二个参数可以是 null。
+例子：
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Computed Styles Example</title>
+    <style type="text/css">
+        #myDiv {
+            background-color: blue;
+            width: 100px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="myDiv" style="background-color: red; border: 1px solid black"></div>
+</body>
+</html>
+var myDiv = document.getElementById('myDiv');
+var computedStyle = document.defaultView.getComputedStyle(myDiv, null);
+console.log(computedStyle.backgroundColor); // "red"
+console.log(computedStyle.width); // "100px"
+console.log(computedStyle.height); // "200px"
+console.log(computedStyle.border); // 不会在所有浏览器中都返回值，因为这是一个综合属性，但是某些浏览器下是"1px solid black"
+
+IE8-仅支持currentStyle属性。
+var myDiv = document.getElementById('myDiv');
+var computedStyle = myDiv.currentStyle;
+console.log(computedStyle.backgroundColor); // "red"
+console.log(computedStyle.width); // "100px"
+console.log(computedStyle.height); // "200px"
+console.log(computedStyle.border); // undefined
+</textarea>
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<script src="../js/base.js"></script>
+<p>参考：</p>
+1.<a href="http://www.zhangxinxu.com/wordpress/?p=2378" target="_blank">获取元素CSS值之getComputedStyle方法熟悉(张鑫旭)</a><br>
+</body>
+
+</html>

@@ -198,7 +198,7 @@ document.domain 不能被设置成URL中不包含的域，如图3。
 <textarea class="codemirror">
 1.document.getElementById
 id严格区分大小写，但是ie8-不区分大小写。ie7-还有个怪癖：
-name特性与给定ID匹配的表单元素􏴰􏴱􏰉􏲜􏱃􏰟􏰠􏲉input、textarea、button、select也会被该方法返回。􏱅􏱺􏵐􏵑
+name特性与给定ID匹配的表单元素input、textarea、button、select也会被该方法返回。
 为了避免ie中的这个bug，最好不让表单name的值与其他元素的id值相同。
 
 2.document.getElementsByTagName
@@ -211,7 +211,7 @@ console.log(images['myImage']);
 // IE将注释实现为元素，因此在IE中调用document.getElementsByTagName('*')会包含注释节点。
 
 3.document.getElementsByName
-namedItem()􏰻􏲆􏳈􏱦􏱖􏲫方法只会获取第一项（因为每一项的name值都相同）。
+namedItem()方法只会获取第一项（因为每一项的name值都相同）。
 </textarea>
 <p>
 	4.特殊集合
