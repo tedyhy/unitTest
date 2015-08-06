@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Range</title>
+	<title>标准浏览器中的范围</title>
 	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
 	<script src="../codemirror/lib/codemirror.js"></script>
 	<script src="../codemirror/mode/javascript/javascript.js"></script>
@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<h1>范围(Range)</h1>
+<h1>标准浏览器中的范围(Range)</h1>
 <h4>高程P332</h4>
 <p>
 	Firefox、Opera、Safari 和 Chrome 都支持 DOM 范围。IE 以专有方式实现了自己的范围特性。
@@ -96,7 +96,7 @@ range2.setEnd(p1, p1.childNodes.length);
 
 1) deleteContents() 这个方法能够从文档中删除范围所包含的内容。
 var p1 = document.getElementById('p1'),
-	helloNode = p1.firstChild,
+	helloNode = p1.firstChild.firstChild,
 	worldNode = p1.lastChild,
 	range = document.createRange();
 range.setStart(helloNode, 2);
@@ -108,7 +108,7 @@ range.deleteContents();
 
 2) extractContents() 也会从文档中移除范围选区，和 deleteContents() 区别在于 extractContents() 会返回范围的文档片段。
 var p1 = document.getElementById('p1'),
-	helloNode = p1.firstChild,
+	helloNode = p1.firstChild.firstChild,
 	worldNode = p1.lastChild,
 	range = document.createRange();
 range.setStart(helloNode, 2);
@@ -125,7 +125,7 @@ p1.parentNode.appendChild(fragment);
 3) cloneContents() 创建范围对象的一个副本
 这个方法与 extractContents()非常类似，因为它们都返回文档片段。它们的主要区别在于，cloneContents()返回的文档片段包含的是范围中节点的副本，而不是实际的节点。
 var p1 = document.getElementById('p1'),
-	helloNode = p1.firstChild,
+	helloNode = p1.firstChild.firstChild,
 	worldNode = p1.lastChild,
 	range = document.createRange();
 range.setStart(helloNode, 2);
@@ -137,11 +137,112 @@ p1.parentNode.appendChild(fragment);
 <p><b>Hello</b> world!</p>
 <b>llo</b> wo
 
+
+4) insertNode() 插入 DOM 范围中的内容
+
+向
+<p id="p1"><b>Hello</b> world!</p>
+中插入：
+<span style="color: red">Inserted text</span>
+
+var p1 = document.getElementById('p1'),
+	helloNode = p1.firstChild.firstChild,
+	worldNode = p1.lastChild,
+	range = document.createRange();
+range.setStart(helloNode, 2);
+range.setEnd(worldNode, 3);
+
+var span = document.createElement('span');
+span.style.color = "red";
+span.appendChild(document.createTextNode('Inserted text'));
+range.insertNode(span);
+
+结果：<p id="p1"><b>He<span style="color: red">Inserted text</span>llo</b> world</p>
+
+
+5) surroundContents() 环绕范围插入内容
+
+<p id="p1"><b>Hello</b> world!</p>
+
+var p1 = document.getElementById('p1'),
+	helloNode = p1.firstChild.firstChild,
+	worldNode = p1.lastChild,
+	range = document.createRange();
+range.selectNode(helloNode);
+
+var span = document.creatElement('span');
+span.style.backgroundColor = "yellow";
+range.surroundContents(span);
+
+
+结果：<p id="p1"><b>He<span style="color: red">Inserted text</span>llo</b> world</p>
+
+
+7.折叠 DOM 范围
+所谓折叠范围，就是指范围中未选择文档的任何部分。
+图 3 展示了折叠范围时发生的情形。
+
+collapse() 折叠范围
+这个方法接受一个参数，一个布尔值，表示要折叠到范围的哪一端。参数 true 表示折叠到范围的起点，参数 false 表示折叠到范围的终点。
+
+var range = document.createRange();
+range.collapse(true);
+
+collapsed 属性判断是否折叠完毕
+
+console.log(range.collapsed); // true|false
+
+
+8.比较 DOM 范围 （Boundary：边界，范围；）
+compareBoundaryPoints() 在有多个范围的情况下，确定这些范围是否有公共的边界（起点或终点）。
+
+比较常量：
+Range.START_TO_START 	0	比较第一个范围和第二个范围的起点；
+Range.START_TO_END 		1	比较第一个范围的起点和第二个范围的终点；
+Range.END_TO_END 		2	比较第一个范围和第二个范围的终点；
+Range.END_TO_START 		3	比较第一个范围的终点和第一个范围的起点。
+
+var range1 = document.createRange(),
+	range2 = document.createRange(),
+	p1 = document.getElementById('p1');
+range1.selectNodeContents(p1);
+range2.selectNodeContents(p1);
+range2.setEndBefore(p1.lastChild);
+
+console.log(range1.compareBoundaryPoints(Range.START_TO_START, range2)); // 0
+console.log(range1.compareBoundaryPoints(Range.END_TO_END, range2)); // 1
+
+如图4。
+
+compareBoundaryPoints()方法可能的返回值如下：
+如果第一个范围中的点位于第二个范围中的点之前，返回-1；
+如果两个点相等，返回 0；
+如果第一个范围中的点位于第二个范围中的点之后，返回1；
+
+
+9.复制 DOM 范围
+cloneRange()方法复制范围。这个方法会创建调用它的范围的一个副本。
+
+var newRange = range.cloneRange();
+
+
+10.清理 DOM 范围
+在使用完范围之后，最好是调用 detach()方法，以便从创建范围的文档中分离出该范围。
+调用detach()之后，就可以放心地解除对范围的引用，从而让垃圾回收机制回收其内存了。
+
+range.detach(); // 从文档中分离
+range = null; // 解除引用，垃圾回收
+
+
 </textarea>
 <p>图1</p>
 <img src="../img/range1.png" alt="">
 <p>图2</p>
 <img src="../img/range2.png" alt="">
+<p>图3</p>
+<img src="../img/collapsed.png" alt="">
+<p>图4</p>
+<img src="../img/compareBoundaryPoints.png" alt="">
 
 
 
