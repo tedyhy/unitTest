@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<h1>IE8及更早版本中的范围(Range)</h1>
+<h1>IE8及更早版本中的范围(Text Range)</h1>
 <h4>高程P340</h4>
 <p>
 	Firefox、Opera、Safari 和 Chrome 都支持 DOM 范围。IE 以专有方式实现了自己的范围特性。<br>
@@ -27,7 +27,114 @@
 顾名思义，文本范围处理的主要是文本（不一定是 DOM 节点）。
 通过<body>、<button>、<input>和<textarea>等这几个元素，可以调用 createTextRange()方法来创建文本范围。
 
+var range = document.body.createTextRange();
+像这样通过 document 创建的范围可以在页面中的任何地方使用（通过其他元素创建的范围则只能在相应的元素中使用）。
 
+
+1.用 IE 范围实现简单的选择
+1) findText() 	选择页面中某一区域。
+
+<p id="p1"><b>Hello</b> world!</p>
+
+var range = document.body.createTextRange();
+var found = range.findText("Hello");
+console.log(found); // true
+console.log(range.text); // "Hello"
+
+
+var foundAgain = range.findText("Hello", 1); // 正值：从当前位置向前搜索；负值：从当前位置向后搜索。
+console.log(foundAgain);
+
+
+2) moveToElementText() 	选择某元素的所有文本，包括HTML标签。
+类似DOM中范围的 selectNode() 方法。
+
+var range = document.body.createTextRange(),
+	p1 = document.getElementById("p1");
+range.moveToElementText(p1);
+console.log(range.text); // 输出只有 Text 的内容
+console.log(range.htmlText); // 输出包含 HTML 的内容
+
+
+3) parentElement() 此方法与 DOM 的 commonAncestorContainer 属性类似。
+
+var ancestor = range.parentElement();
+
+
+2.使用 IE 范围实现复杂的选择
+在 IE 中创建复杂范围的方法，就是以特定的增量向四周移动范围。
+共 4 个方法：move()、moveStart()、moveEnd()和 expand()。这些方法都接受两个参数：移动单位和移动单位的数量。
+移动单位：
+1)"character"：逐个字符地移动。
+2)"word"：逐个单词（一系列非空格字符）地移动。
+3)"sentence"：逐个句子（一系列以句号、问号或叹号结尾的字符）地移动。
+4)"textedit"：移动到当前范围选区的开始或结束位置。
+
+·通过 moveStart()方法可以移动范围的起点，通过 moveEnd()方法可以移动范围的终点，移动的幅度由单位数量指定。
+
+range.moveStart("word", 2); // 起点移动两个单词
+range.moveEnd("character", 1); // 终点移动一个字符
+
+·使用 expand()方法可以将范围规范化。（expand：“扩大”）
+换句话说，expand()方法的作用是将任何部分选择的文本全部选中。例如，当前选择的是一个单词中间的两个字符，调用
+range.expand("word")可以将整个单词都包含在范围之内。
+
+·而 move()方法则首先会折叠当前范围（让起点和终点相等），然后再将范围移动指定的单位数量。
+调用 move()之后，范围的起点和终点相同，因此必须再使用 moveStart()或 moveEnd()创建新的选区。
+range.move("character", 5);
+
+
+3.操作 IE 范围中的内容
+使用 text属性、pasteHTML() 方法。
+var range = document.body.createTextRange();
+range.findText('Hello');
+setTimeout(function(){
+	range.pasteHTML("<em>AAA</em>");
+}, 3e3);
+range.text = "Howdy";
+
+
+4.折叠 IE 范围
+collapse()方法与DOM方法一致。
+range.collapse(true); // 折叠到起点
+
+没有对应的 collapsed 属性让我们知道范围是否已经折叠完毕。为此，必须使用 boundingWidth 属性，该属性返回范围的宽度（以像素为单位）。
+var isCollapsed = (range.boundingWidth === 0);
+
+
+5.比较 IE 范围
+1) compareEndPoints() 方法
+IE 中的 compareEndPoints()方法与 DOM 范围的 compareBoundaryPoints()方法类似。
+如果第一个范围的边界位于第二个范围的边界前面，返回-1；
+如果二者边界相同，返回 0；
+如果第一个范围的边界位于第二个范围的边界后面，返回 1。
+
+var range1 = document.body.createTextRange(),
+	range2 = document.body.createTextRange();
+range1.findText("Hello world!");
+range2.findText("Hello");
+
+console.log(range1.compareEndPoints("StartToStart", range2)); // 0
+console.log(range1.compareEndPoints("EndToEnd", range2)); // 1
+
+
+2) 
+isEqual() 用于确定两个范围是否相等。
+inRange() 用于确定一个范围是否包含另一个范围。
+
+var range1 = document.body.createTextRange();
+var range2 = document.body.createTextRange();
+
+range1.findText("Hello world!");
+range2.findText("Hello");
+
+console.log(range1.isEqual(range2)); // false
+console.log(range1.inRange(range2)); // true
+
+
+6.复制 IE 范围
+创建原范围的一个副本，新创建的范围会带有与原范围完全相同的属性。
+var newRange = range.duplicate();
 </textarea>
 
 
