@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=EDGE,chrome=1">
+	<title>simple发布框</title>
+	<style type="text/css">
+		body{font:12px/1.2 Tohoma, sans-serif;margin:0;padding:0;}
+		h4{margin:20px;}
+		#ta{border:1px solid #c93;width:500px;height:100px;margin:0 20px;resize:none;}
+		a{margin-left:10px;}
+	</style>
+</head>
+<body>
+	<h4>测试测试测试输入框</h4>
+	<textarea id="ta" onkeyup="setPos();" onclick="setPos();"></textarea>
+	<a href="javascript:;" onclick="insert('狠狠的插');">插入</a>
+	<a href="javascript:;" onclick="topic();">话题</a>
+	<a href="javascript:;" onclick="goEnd();">移至末尾</a>
+	<script type="text/javascript">
+		var ta = document.getElementById('ta'),
+			pos;
+		
+		function setPos() {
+		   if (!document.selection) return ta.selectionStart;
+		   var r1 = document.selection.createRange(), r2 = document.body.createTextRange(), s = 0;
+		   try {
+			  r2.moveToElementText(ta);
+			  for (var s;r2.compareEndPoints("StartToStart", r1) < 0; s++){
+				 r2.moveStart("character", 1);
+			  }
+		   } catch (e) {
+			  s = 0;
+		   }
+		   pos = s;
+		}
+		
+		function insert(str,undefined){
+			ta.focus();
+			var start, end, v = ta.value, r, r1;
+			if(document.selection){	
+				r = document.selection.createRange();
+				r1 = ta.createTextRange();	
+				if(r.text){
+					r.text = str;
+					r.select();	
+				}else if(pos != undefined){
+				   	r1.moveStart('character', pos);
+					r1.collapse();
+					r1.text = str;				
+					r1.select();
+				}			
+				setPos();
+			}else{
+				start = ta.selectionStart;
+				end = ta.selectionEnd;
+				ta.value = v.substring(0, start) + str + v.substring(end);
+				end = start + str.length;
+				ta.setSelectionRange(end, end);
+			}		
+		}
+
+		function topic(){
+			var v = ta.value,
+				str = '#在这里输入你谈论的话题名称#',
+				start = v.indexOf(str);
+			if(start == -1){
+				insert(str);
+			}
+			word(str, start);
+		}
+
+		function word(str){
+			ta.focus();	
+			var start = ta.value.indexOf(str);
+			if (document.selection){
+				var r = ta.createTextRange(); 
+			    r.findText(str);	
+				r.moveStart('character');
+				r.moveEnd('character', -1);
+				r.select();
+			}else{
+				start++;
+				var end = start + 13;
+				ta.setSelectionRange(start, end);
+			}				
+		}
+
+		function goEnd(){
+			ta.focus()
+			var len = ta.value.length, r;	
+			if(ta.createTextRange){
+				r = ta.createTextRange();
+				r.moveStart('character', len);
+				r.collapse();
+				r.select();				
+			}else{
+				ta.selectionStart = ta.selectionEnd = len;
+			}
+		}
+	</script>
+</body>
+</html>
