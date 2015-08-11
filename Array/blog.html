@@ -20,6 +20,7 @@
 <p>关键词：Array</p>
 <p>
 	数组概念：
+</p>
 <textarea class="codemirror">
 稀疏数组：包含从0开始的不连续索引的数组。如果是稀疏数组，则length值大于元素的个数。如：
 var arr = new Array(10);
@@ -28,9 +29,9 @@ arr3[1000] = 1;
 
 // delete操作也可以产生稀疏数组。
 </textarea>
-</p>
 <p>
 	数组遍历优化：
+</p>
 <textarea class="codemirror">
 for(var i = 0; i < arr.length; i++) {
 	console.log(arr[i]);
@@ -41,8 +42,6 @@ for(var i = 0, len = arr.length; i < len; i++) {
 	console.log(arr[i]);
 }
 </textarea>
-</p>
-<p>
 <textarea class="codemirror">
 // for/in 能枚举继承来得属性，如添加到Array.prototype中得属性。
 // 因此数组上不应该使用for/in来遍历，除非使用额外的检测方法来过滤不想要的属性。
@@ -53,9 +52,30 @@ for (var i in arr) {
 // ECMAScript允许for/in遍历以不同的顺序遍历对象的属性。因此，如果算法依赖数组元素顺序时，
 // 不要以for/in来遍历，最好用for循环。
 </textarea>
+<p>
+	检测数组：
 </p>
+<textarea class="codemirror">
+对于一个网页，或者一个全局作用域而言，使用 instanceof 操作符就能得到满意的结果：
+if (value instanceof Array) {
+	console.log("is an Array");
+}
+
+背景：
+如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。
+如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
+
+因此，ECMAScript 5 新增了 Array.isArray()方法。
+这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
+if (Array.isArray(value)) {
+	console.log("is an Array");
+}
+
+注意：支持 Array.isArray()方法的浏览器有 IE9+、Firefox 4+、Safari 5+、Opera 10.5+和 Chrome。
+</textarea>
 <p>
 	数组方法：
+</p>
 <textarea class="codemirror">
 /* ECMAScript3中数组方法 */
 // 1.join、split
@@ -88,10 +108,11 @@ arr.splice(3, 2); // [1,2,3,6,7,8]
 arr.splice(3, 2, ["a", "b"], "c"); // [1,2,3,["a","b"],"c",6,7,8]
 // 7.push、pop
 // 8.shift、unshift
-// 9.toString、toLocalString
+// 9.toString、valueOf、toLocalString
 var arr = [1,2,3];
 arr.toString(); // '1,2,3' 默认逗号分隔
-var arr = [1,["a", "b"]]; // '1, "a", "b"'
+var arr = [1,["a", "b"]];
+arr.toString(); // '1, a, b'
 
 /* ECMAScript5中数组方法 */
 // 1.forEach
@@ -143,9 +164,9 @@ var isArray = Function.isArray || function(o){
 	return typeof o === 'object' && Object.prototype.toString.call(o) === '[object Array]';
 };
 </textarea>
-</p>
 <p>
 	类数组对象：
+</p>
 <textarea class="codemirror">
 // 数组与其他对象的区别
 // 1.当有新的元素添加到列表时，自动更新length属性。
@@ -154,7 +175,6 @@ var isArray = Function.isArray || function(o){
 // 4.其类属性为"Array"。
 var a = {"0": "a", "1": "b", "2": "c", length: 3};
 </textarea>
-</p>
 
 
 <script src="../js/base.js"></script>

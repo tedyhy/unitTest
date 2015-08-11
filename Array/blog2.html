@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Array</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>Array（高3 P86）</h1>
+<p>
+	数组概念：
+</p>
+<textarea class="codemirror">
+1.ECMAScript 数组的每一项可以保存任何类型的数据
+2.ECMAScript 数组的大小是可以动态调整的，即可以随着数据的添加自动增长以容纳新增数据。
+3.创建数组的基本方式有两种
+	Array构造函数创建
+		var arr = new Array(10);
+		var arr = Array("red", "blue", "green");
+	数组字面量创建
+		var colors = ["red", "blue", "green"];
+</textarea>
+<p>
+	注意事项：
+</p>
+<textarea class="codemirror">
+1.
+var values = [1,2,]; // 不要这样！这样会创建一个包含 2 或 3 项的数组
+var options = [,,,,,]; // 不要这样！这样会创建一个包含 5 或 6 项的数组
+
+在 IE8- 中：
+values === [1,2,undefined]
+options === [undefined,undefined,undefined,undefined,undefined,undefined]
+其他浏览器中：
+values === [1,2]
+options === [undefined,undefined,undefined,undefined,undefined]
+
+2.如果不给 join()方法传入任何值，或者给它传入 undefined，则使用逗号作为分隔符。
+IE7-会错误的使用字符串"undefined"作为分隔符。
+
+3.IE7- 对 JavaScript 的实现中存在一个偏差，其 unshift()方法总是返回 undefined 而不是数组的新长度。
+IE8 在非兼容模式下会返回正确的长度值。因此，最好不要使用此特性。
+
+4.如果只想反转数组原来的顺序，使用 reverse()方法要更快一些。
+</textarea>
+<p>
+	检测数组
+</p>
+<textarea class="codemirror">
+1.对于一个网页，或者一个全局作用域而言，使用 instanceof 操作符就能得到满意的结果：
+if (arr instanceof Array) {
+	console.log("is an Array.")
+}
+
+2.如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。
+如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
+ECMAScript 5 新增了 Array.isArray()方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
+if (Array.isArray(arr)) {
+	console.log("is an Array.")
+}
+
+支持 Array.isArray()方法的浏览器有 IE9+、Firefox 4+、Safari 5+、Opera 10.5+和 Chrome。
+</textarea>
+<p>
+	转换方法
+</p>
+<textarea class="codemirror">
+所有对象都具有 toLocaleString()、toString()和 valueOf()方法。
+toLocaleString()、toString() 方法会返回由数组中每个值的字符串形式拼接而成的一个以逗号分隔的字符串。（数组中的每个值都调用其相应方法一次）
+valueOf() 方法返回的还是数组。
+var colors = ["red", "blue", "green"];
+console.log(colors.toString()); // 'red,blue,green'
+console.log(colors.toLocaleString()); // 'red,blue,green'
+console.log(colors.valueOf()); // ["red", "blue", "green"]
+</textarea>
+<p>
+	栈方法
+</p>
+<textarea class="codemirror">
+栈是一种 LIFO（Last-In-First-Out，后进先出）的数据结构，也就是最新添加的项最早被移除。
+方法：
+push() 		返回修改后数组的长度。
+pop() 		返回移除的项。
+
+var count = colors.push("black"); // 推入另一项
+alert(count); //3
+var item = colors.pop(); // 取得最后一项
+alert(item); //"black"
+</textarea>
+<p>
+	队列方法
+</p>
+<textarea class="codemirror">
+栈数据结构的访问规则是 LIFO（后进先出），而队列数据结构的访问规则是 FIFO（First-In-First-Out，先进先出）。
+方法：
+shift() 		返回被弹出的第一项。
+unshift() 		返回新数组的长度。
+
+var item = colors.shift(); //取得第一项
+alert(item); //"red"
+alert(colors.length); //2
+var count = colors.unshift("red", "green"); //推入两项
+alert(count); //2
+
+注意：IE7- 对 JavaScript 的实现中存在一个偏差，其 unshift()方法总是返回 undefined 而不是数组的新长度。
+IE8 在非兼容模式下会返回正确的长度值。因此，最好不要使用此特性。
+</textarea>
+<p>
+	重排序方法（修改原数组）
+</p>
+<textarea class="codemirror">
+方法：
+reverse()
+sort()
+
+sort()方法会调用每个数组项的 toString()转型方法，然后比较得到的字符串，以确定如何排序。
+即使数组中的每一项都是数值，sort()方法比较的也是字符串。
+
+sort()方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。
+比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回一个负数，
+如果两个参数相等则返回0，如果第一个参数应该位于第二个之后则返回一个正数。
+// 升序
+function compare(value1, value2){
+	if (value1 < value2) {
+		return -1;
+	} else if (value1 > value2) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+// 降序
+function compare2(value1, value2){
+	if (value1 < value2) {
+		return 1;
+	} else if (value1 > value2) {
+		return -1;
+	} else {
+		return 0;
+	}
+}
+var values = [0, 1, 5, 10, 15];
+values.sort(compare);
+console.log(values); //[0,1,5,10,15]
+</textarea>
+<p>
+	操作方法
+</p>
+<textarea class="codemirror">
+// 不改变原数组
+1.concat() 		方法可以基于当前数组中的所有项创建一个新数组。返回新构建的数组。
+var colors = ["red", "green", "blue"];
+var colors2 = colors.concat("yellow", ["black", "brown"]);
+alert(colors); //red,green,blue
+alert(colors2); //red,green,blue,yellow,black,brown
+
+2.slice() 		它能够基于当前数组中的一或多个项创建一个新数组。
+1）在只有一个参数的情况下，slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。
+如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。
+返回从该参数指定位置开始到当前数组末尾的所有项。
+2）如果 slice()方法的参数中有一个负数，则用数组长度加上该数来确定相应的位置。
+例如，在一个包含 5 项的数组上调用 slice(-2,-1)与调用 slice(3,4)得到的结果相同。如果结束位置小于起始位置，则返回空数组。
+var colors = ["red", "green", "blue", "yellow", "purple"];
+var colors2 = colors.slice(1);
+var colors3 = colors.slice(1,4);
+alert(colors2); //green,blue,yellow,purple
+alert(colors3); //green,blue,yellow 
+
+// 改变原数组
+3.splice() 		主要用途是向数组的中部插入项。
+
+
+</textarea>
+<p>
+	重排序方法
+</p>
+<textarea class="codemirror">
+
+</textarea>
+<p>
+	重排序方法
+</p>
+<textarea class="codemirror">
+
+</textarea>
+
+
+
+<script src="../js/base.js"></script>
+</body>
+
+</html>
