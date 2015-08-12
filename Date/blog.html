@@ -18,8 +18,62 @@
 <body>
 <h1>Date（高3 P98）</h1>
 <p>
+	概念
 </p>
 <textarea class="codemirror">
+Date类型使用自UTC（国际协调时）1970 年 1 月 1 日午夜(零时)开始经过的毫秒数来保存日期。
+
+var date = new Date();
+
+GMT（格林尼治标准时间），以伦敦的格林威治作为全球时间的中心点。
+G+8表示东八区（北京时间），其时间比格林尼治时间早8个小时。
+
+
+1.计算日期的毫秒数(即从 UTC 时间 1970 年 1 月 1 日午 夜起至该日期止经过的毫秒数)
+两个方法：
+Date.parse()
+Date.UTC()
+
+var someDate = new Date(Date.parse("May 25, 2004"));
+等价于
+var someDate = new Date("May 25, 2004");
+
+var allFives = new Date(Date.UTC(2005, 4, 5, 17, 55, 55));
+等价于
+var allFives = new Date(2005, 4, 5, 17, 55, 55);
+
+
+2.Date.now() 方法
+
+支持 Data.now()方法的浏览器包括 IE9+、Firefox 3+、Safari 3+、Opera 10.5 和 Chrome。
+在不支持它的浏览器中,使用+操作符把 Data 对象转换成时间戳,也可以达到同样的目的。
+
+
+3.继承的方法
+toLocaleString()
+toString()
+valueOf()
+
+toLocaleString()和 toString()的差别仅在调试代码时比较有用,而在显示日期和时间时没有什么价值。
+
+var date1 = new Date(2007, 0, 1);
+var date2 = new Date(2007, 1, 1);
+console.log(date1 < date2); //true
+console.log(date1 > date2); //false
+
+console.log(date1.valueOf()); // 1167580800000
+
+4.日期格式化方法
+toUTCString() 以特定于实现的格式完整的 UTC 日期。
+ECMAScript 推荐现在编写的代码一律使用 toUTCString() 方法。
+
+
+5.时间对象的方法
+getTime()
+getFullYear()
+getMonth()
+...
+
 
 </textarea>
 
