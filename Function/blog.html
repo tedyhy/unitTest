@@ -209,6 +209,19 @@ arguments.length为 实参个数。
 
 注意：在严格模式下，未指定环境对象而调用函数，则 this 值不会转型为 window。
 除非明确把函数添加到某个对象或者调用 apply()或 call()，否则 this 值将是 undefined。
+
+4）bind()方法（Ecmascript 5 方法）
+这个方法会创建一个函数的实例,其 this 值会被绑定到传给 bind()函数的值。
+
+window.color = "red";
+var o = { color: "blue" };
+function sayColor(){
+    alert(this.color);
+}
+var objectSayColor = sayColor.bind(o);
+objectSayColor(); //blue
+
+支持 bind()方法的浏览器有 IE9+、Firefox 4+、Safari 5.1+、Opera 12+和 Chrome。
 </textarea>
 
 

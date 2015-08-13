@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>面向对象设计</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>面向对象设计（高3 P138）</h1>
+面向对象(Object-Oriented,OO)的语言有一个标志，那就是它们都有类的概念，而通过类可以创建任意多个具有相同属性和方法的对象。
+
+<h2>理解对象</h2>
+<h4>属性类型（ecma262v5）</h4>
+<textarea class="codemirror">
+ecma262中有两种属性:数据属性和访问器属性。
+
+//例1
+var person = {
+    name: "Nicholas",
+    age: 29,
+    job: "Software Engineer",
+    sayName: function(){
+        alert(this.name);
+	}
+};
+
+
+1.数据属性
+[[Configurable]]
+表示能否通过 delete 删除属性从而重新定义属性,能否修改属性的特性,或者能否把属性修改为访问器属性。
+默认为true。
+
+[[Enumerable]]
+表示能否通过 for-in 循环返回属性。即，是否可枚举。
+默认为true。
+
+[[Writable]]
+表示能否修改属性的值。
+默认为true。
+
+[[Value]]
+包含这个属性的数据值。
+默认值为undefined。
+
+
+
+
+
+
+
+
+</textarea>
+
+
+<script src="../js/base.js"></script>
+</body>
+
+</html>
