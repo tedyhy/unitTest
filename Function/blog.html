@@ -21,9 +21,195 @@
 	概念
 </p>
 <textarea class="codemirror">
+1.函数是对象。每个函数都是 Function 类型的实例，而且都与其他引用类型一样具有属性和方法。
+函数名实际上也是一个指向函数对象的指针。
+
+2.“函数是对象，函数名是指针”。
+
 
 </textarea>
+<p>
+	Function类型
+</p>
+<textarea class="codemirror">
+1.定义函数方式
+1）函数声明方式定义
+function sum (num1, num2) {
+	return num1 + num2;
+}
 
+2）函数表达式定义
+var sum = function(num1, num2){
+	return num1 + num2;
+};
+
+3）Function 构造函数方式定义
+var sum = new Function("num1", "num2", "return num1 + num2"); // 不推荐
+最后一个参数始终是函数体，前面参数是新函数的参数。
+不推荐读者使用这种方法定义函数，因为这种语法会导致解析两次代码（第一次是解析常规 ECMAScript 代码，第二次是解析传入构造函数中的字符串），从而影响性能。
+
+
+function sum(num1, num2){ // 函数声明
+	return num1 + num2;
+}
+alert(sum(10,10)); //20 调用函数
+var anotherSum = sum; // 访问函数指针，非调用，两个指针指向同一个函数。
+alert(anotherSum(10,10)); //20
+sum = null; // 清空当前函数指针，如果已经没有其他指针，则清楚函数所占内存。
+alert(anotherSum(10,10)); //20
+
+
+2.没有重载（深入理解）
+function addSomeNumber(num){
+	return num + 100;
+}
+function addSomeNumber(num) {
+	return num + 200;
+}
+var result = addSomeNumber(100); //300
+
+将函数名想象成指针，这里做了指针覆盖。内存中之前定义的函数将被清除。
+类似下面：
+var addSomeNumber = function (num){
+	return num + 100;
+};
+addSomeNumber = function (num) {
+	return num + 200;
+};
+var result = addSomeNumber(100); //300
+
+
+3.函数声明与函数表达式区别
+解析器会率先读取函数声明，并使其在执行任何代码之前可用（可以访问）；
+至于函数表达式，则必须等到解析器执行到它所在的代码行，才会真正被解释执行。
+
+alert(sum(10,10));
+function sum(num1, num2){
+	return num1 + num2;
+}
+
+分析：
+以上代码完全可以正常运行。因为在代码开始执行之前，解析器就已经通过一个名为函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。
+对代码求值时，JavaScript引擎在第一遍会声明函数并将它们放到源代码树的顶部。
+所以，即使声明函数的代码在调用它的代码后面，JavaScript 引擎也能把函数声明提升到顶部。
+如果像下面例子所示的，把上面的函数声明改为等价的函数表达式，就会在执行期间导致错误。
+alert(sum(10,10));
+var sum = function(num1, num2){
+	return num1 + num2;
+};
+
+
+4.函数内部属性
+两个特殊的对象：arguments 和 this。
+1）arguments.callee属性：该属性是一个指针，指向拥有这个 arguments 对象的函数。（经典阶乘函数）
+
+function factorial(num){
+	if (num <= 1) {
+		return 1;
+	} else {
+		return num * factorial(num - 1);
+	}
+}
+
+但问题是这个函数的执行与函数名 factorial 紧紧耦合在了一起。为了消除紧耦合，可以这样：
+
+function factorial(num){
+	if (num <= 1) {
+		return 1;
+	} else {
+		return num * arguments.callee(num - 1);
+	}
+}
+
+2）this引用的是函数据以执行的环境对象——或者也可以说是 this 的值（如：当在网页的全局作用域中调用函数时，this 对象引用的就是 window）。
+window.color = "red";
+var o = { color: "blue" };
+function sayColor(){
+	alert(this.color);
+}
+sayColor(); //"red"
+o.sayColor = sayColor;
+o.sayColor(); //"blue"
+
+3）函数的caller属性
+这个属性中保存着调用当前函数的函数的引用，如果是在全局作用域中调用当前函数，它的值为 null。
+function outer(){
+	inner();
+}
+function inner(){
+	alert(inner.caller); // 或者松耦合方式：alert(arguments.callee.caller)
+}
+outer();
+
+
+注意：在严格模式下，arguments.callee、arguments.caller都会导致错误。
+
+
+// 例子解析
+// http://www.html-js.com/qa/336#answer-710
+var aaa = (function f(num){
+    if (num <= 1){
+        return 1;
+    } else {
+        return num * f(num -1);
+    }
+});
+f = null;
+aaa(5);//120
+为什么f=null不影响结果呢？ 外面的圆括号有什么含义呢？
+这样也行：
+var aaa = function f(num){
+    if (num <= 1){
+        return 1;
+    } else {
+        return num * f(num -1);
+    }
+};
+f = null;
+aaa(5);//120
+为什么呢？
+
+解答：
+原因在于 JavaScript 中声明函数的语法：
+console.log(typeof f) // 'function'
+function f () {}
+上面这段里面 function f () {} 是一个特殊的函数声明语法，f 会成为一个指向该函数的变量，
+而且是直接 hoist 到整个作用域顶部的，因此甚至把 console.log 放在这个声明前面都可以。
+但前提是它必须是一个独立完整的 statement。如果这个语句不是独立出现的话，它是不会被解析器看作一个函数声明的。
+举例：
+!function f () {}
+console.log(typeof f) // 'undefined'
+开头的那个 ! 破坏了函数声明的独立性，解析器会认为这是一个复合语句，而这个函数被看做是一个带有自标识 f 的匿名函数。
+所谓自标识，就是在该函数内部可以用 f 来引用其自身（在递归中较常用到），但在外部 f 是未定义的。
+在此基础上就不难理解，使用 var 来定义函数，函数会赋值给 var 后面的变量，但 function 后面那个名字会被看做函数的自标识。
+var aaa = function f () {}
+console.log(typeof aaa) //'function'
+console.log(typeof f) // 'undefined'
+同理，加上一个括号也会破坏函数声明。这里的括号是作为一个运算符的，意味着先计算括号内语句的值，
+然后再用这个值来进行下一步计算。既然是个运算符，那么这个语句就成为复合语句了，也就不再是一个函数声明。
+因此 f 又被作为自标识了。
+(function f () {})
+console.log(typeof f) // 'undefined'
+同上。
+
+
+5.函数属性和方法
+每个函数都包含两个属性：length 和 prototype。
+每个函数都包含两个非继承而来的方法：apply()和 call()。
+
+1）length
+func.length 为函数形参个数。
+arguments.length为 实参个数。
+
+2）prototype
+在 ECMAScript 5 中，prototype 属性是不可枚举的，因此使用 for-in 无法发现。
+
+3）apply()、call()方法
+这两个方法的用途都是在特定的作用域中调用函数，实际上等于设置函数体内 this 对象的值。
+
+注意：在严格模式下，未指定环境对象而调用函数，则 this 值不会转型为 window。
+除非明确把函数添加到某个对象或者调用 apply()或 call()，否则 this 值将是 undefined。
+</textarea>
 
 
 <script src="../js/base.js"></script>
