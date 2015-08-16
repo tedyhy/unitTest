@@ -346,7 +346,8 @@ function hasPrototypeProperty(object, name){
 	return !object.hasOwnProperty(name) && (name in object);
 };
 
-在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的（enumerated）属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。屏蔽了原型中不可枚举属性（即将[[Enumerable]]标记为 false 的属性）的实例属性也会在 for-in 循环中返回，
+在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的（enumerated）属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。
+屏蔽了原型中不可枚举属性（即将[[Enumerable]]标记为 false 的属性）的实例属性也会在 for-in 循环中返回，
 因为根据规定，所有开发人员定义的属性都是可枚举的——只有在 IE8 及更早版本中例外。
 IE 早期版本的实现中存在一个 bug，即屏蔽不可枚举属性的实例属性不会出现在 for-in 循环中。
 例如：
@@ -362,10 +363,147 @@ for (var prop in o){
 }
 
 
+·要取得对象上所有可枚举的实例属性：
+Object.keys() （ecma262v5支持）
+
+function Person(){}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function(){
+    alert(this.name);
+};
+var keys = Object.keys(Person.prototype);
+console.log(keys); //["name,age,job,sayName"]
+var p1 = new Person();
+p1.name = "Rob";
+p1.age = 31;
+var p1keys = Object.keys(p1);
+console.log(p1keys); // ["name,age"]
+
+·要得到所有实例属性,无论它是否可枚举：
+Object.getOwnPropertyNames() （ecma262v5）
+
+var keys = Object.getOwnPropertyNames(Person.prototype);
+console.log(keys); // ["constructor,name,age,job,sayName"]
+
+
+3.更简单的原型语法
+function Person(){}
+Person.prototype = {
+    name : "Nicholas",
+    age : 29,
+    job: "Software Engineer",
+    sayName : function () {
+        alert(this.name);
+    }
+};
+将 Person.prototype 设置为等于一个以对象字面量形式创建的新对象。
+最终结果相同，但有一个例外：constructor 属性不再指向 Person 了。
+其实这里本质上完全重写了构造函数 Person 默认的 prototype 对象，
+因此 constructor 属性也就变成了新对象的 constructor 属性(指向 Object 构造函数)，不再指向 Person 函数。
+尽管 instanceof 操作符还能返回正确的结果,但通过 constructor 已经无法确定对象的类型了。
+
+var friend = new Person();
+alert(friend instanceof Object); // true
+alert(friend instanceof Person); // true
+alert(friend.constructor == Person); // false
+alert(friend.constructor == Object); // true
+
+如果 constructor 值真的很重要，则可以如下将其值设置回适当的值。
+function Person(){}
+Person.prototype = {
+	constructor: Person,
+	name: "Nicholas",
+	age: 29,
+	job: "Software Engineer",
+	sayName: function () {
+		alert(this.name);
+	}
+}
+
+以这种方式重设 constructor 属性会导致它的 [[Enumerable]] 的特性为true。默认情况下 constructor 属性
+是不可枚举的。因此支持 ecma262v5 的情况下，可以这样：
+function Person(){}
+Person.prototype = {
+	name: "Nicholas",
+	age: 29,
+	job: "Software Engineer",
+	sayName: function () {
+		alert(this.name);
+	}
+}
+Object.defineProperty(Person.prototype, 'constructor', {
+	enumerable: false,
+	value: Person
+});
+
+
+注意：
+propertyIsEnumerable() 方法可以判断对象属性是否可枚举。
+function Person(){}
+Person.prototype = {
+	name: "Nicholas"
+};
+var p1 = new Person();
+console.log(p1.propertyIsEnumerable("name")); // false
+p1.name = "Tom";
+console.log(p1.propertyIsEnumerable("name")); // true
+
+
+4.原型的动态性
+var friend = new Person();
+Person.prototype.sayHi = function(){
+	alert("hi");
+};
+friend.sayHi(); // "hi"
+
+尽管可以随时为原型添加属性和方法，并且修改能立即在所有对象实例中反映出来。但是如果是重写整个原型对象，
+那么情况就不一样了。
+调用构造函数时会为实例添加一个指向最初原型的 [[Prototype]] 指针，而把原型修改为另外一个对象就等于
+切断了构造函数与最初原型之间的联系，也切断了实例与最初原型指针的联系。
+
+function Person(){}
+var friend = new Person();
+Person.prototype = {
+	constructor: Person,
+	name : "Nicholas",
+	age : 29,
+	job : "Software Engineer",
+	sayName : function () {
+		alert(this.name);
+	}
+};
+friend.sayName(); // error，下图展示了这个过程的内幕</textarea>
+<img src="../img/prototype2.png" alt="">
+<textarea class="codemirror">
+重写原型对象切断了现有原型与任何之前已存在的对象实例之间的联系。它们引用的仍是最初的原型。
+
+
+5.原生对象的原型
+如：Array.prototype.sort()、Array.prototype.splice()。
+
+String.prototype.startsWith = function (text) {
+    return this.indexOf(text) == 0;
+};
+var msg = "Hello world!";
+alert(msg.startsWith("Hello")); //true
+
+尽管可以这样做，但是不建议在产品化过程中修改原生对象原型。
+
+
+6.原型对象的问题
+
+
+
+
+
+
+
+
+
 
 </textarea>
-
-
 
 
 
