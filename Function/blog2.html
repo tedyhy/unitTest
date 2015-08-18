@@ -493,37 +493,86 @@ alert(msg.startsWith("Hello")); //true
 
 
 6.原型对象的问题
+原型中所有属性是被很多实例共享的，这种共享对于函数非常合适。
+对于那些包含基本值的属性倒也说得过去，通过在实例上添加一个同名属性，可以隐藏原型中的对应属性。
+然而，对于包含引用类型值的属性来说，问题就比较突出了。
 
-
-
-
-
-
-
-
-
+function Person(){}
+Person.prototype = {
+	constructor : Person,
+	name : "Nicholas",
+	age : 29,
+	job : "Software Engineer",
+	friends : ["Shelby", "Court"],
+	sayName : function () {
+		alert(this.name);
+	}
+}
+var person1 = new Person();
+var person2 = new Person();
+person1.friends.push("Van");
+console.log(person1.friends); // ["Shelby,Court,Van"]
+console.log(person2.friends); // ["Shelby,Court,Van"]
+console.log(person1.friends === person2.friends); // true
 
 </textarea>
-
-
-
-
-<h4>构造函数模式</h4>
+<h4>组合使用构造函数模式和原型模式</h4>
 <textarea class="codemirror">
+这是用来定义引用类型的一种默认模式。
+
+function Person(name, age, job){
+	this.name = name
+	this.age = age
+	this.job = job
+	this.friends = ["Shelby", "Court"]
+}
+Person.prototype = {
+	constructor : Person,
+	sayName : function(){
+		alert(this.name)
+	}
+}
+var person1 = new Person("Nicholas", 29, "Software Engineer");
+var person2 = new Person("Greg", 27, "Doctor");
+person1.friends.push("Van");
+console.log(person1.friends); // ["Shelby,Count,Van"]
+console.log(person2.friends); // ["Shelby,Count"]
+console.log(person1.friends === person2.friends); // false
+console.log(person1.sayName === person2.sayName); // true
+
+构造函数模式用于定义实例属性，而原型模式用于定义方法和共享的属性。
+结果，每个实例都会有自己的一份实例属性的副本，但同时又共享着对方法的引用，最大限度地节省了内存。
 </textarea>
-<h4>构造函数模式</h4>
+<h4>寄生构造函数模式</h4>
 <textarea class="codemirror">
+function Person(name, age, job){
+	var o = new Object();
+	o.name = name;
+	o.age = age;
+	o.job = job;
+	o.sayName = function(){
+		alert(this.name);
+	};
+	return o;
+}
+var friend = new Person("Nicholas", 29, "Software Engineer");
+friend.sayName(); //"Nicholas"
+
+构造函数在不返回值的情况下，默认会返回新对象实例。
+而通过在构造函数的末尾添加一个 return 语句，可以重写调用构造函数时返回的值。
+
+如：
+function SpecialArray(){
+	var values = new Array();
+	values.push.apply(values, arguments)
+	values.toPipedString = function(){
+		return this.join("|")
+	}
+	return values
+}
+var colors = new SpecialArray("red", "blue", "green");
+console.log(colors.toPipedString()); // "red|blue|green"
 </textarea>
-<h4>构造函数模式</h4>
-<textarea class="codemirror">
-</textarea>
-
-
-
-
-
-
-
 
 
 <script src="../js/base.js"></script>

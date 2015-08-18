@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>继承</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>继承（高3 P162）</h1>
+
+<h2>原型链</h2>
+<textarea class="codemirror">
+function SuperType(){
+	this.property = true;
+}
+SuperType.prototype.getSuperValue = function(){
+	return this.property;
+};
+function SubType(){
+	this.subproperty = false;
+}
+//继承了 SuperType
+SubType.prototype = new SuperType();
+SubType.prototype.getSubValue = function (){
+	return this.subproperty;
+};
+var instance = new SubType();
+console.log(instance.getSuperValue()); //true
+</textarea>
+<img src="../img/oo1.png" alt="">
+<textarea class="codemirror">
+在上面的代码中，我们没有使用 SubType 默认提供的原型，而是给它换了一个新原型；
+这个新原型就是 SuperType 的实例。于是，新原型不仅具有作为一个 SuperType 的实例所拥有的全部属性和方法，
+而且其内部还有一个指针，指向了 SuperType 的原型。最终结果就是这样的：
+instance 指向 SubType 的原型， SubType 的原型又指向 SuperType 的原型。
+此外，要注意 instance.constructor 现在指向的是 SuperType，这是因为原来 SubType.prototype 中的 constructor 重写了的缘故。
+
+
+通过实现原型链，本质上扩展了原型搜索机制。
+当以读取模式访问一个实例属性时，首先会在实例中搜索该属性。如果没有找到该属性，则会继续搜索实例的原型。
+在通过原型链实现继承的情况下，搜索过程就得以沿着原型链继续向上。
+就拿上面的例子来说，调用 instance.getSuperValue() 会经历三个搜索步骤：
+1）搜索实例；
+2）搜索 SubType.prototype；
+3）搜索 SuperType.prototype，最后一步才会找到该方法。
+在找不到属性或方法的情况下，搜索过程总是要一环一环地前行到原型链末端才会停下来。
+</textarea>
+<h4>别忘记默认的原型</h4>
+<textarea class="codemirror">
+所有函数的默认原型都是 Object 的实例，因此默认原型都会包含一个内部指针，指向 Object.prototype。
+这也正是所有自定义类型都会继承 toString()、valueOf()等默认方法的根本原因。
+下面展示该例子中完整的原型链：
+</textarea>
+<img src="../img/oo2.png" alt="">
+<h4>确定原型和实例的关系</h4>
+<textarea class="codemirror">
+1）instanceof
+alert(instance instanceof Object); //true
+alert(instance instanceof SuperType); //true
+alert(instance instanceof SubType); //true
+2）isPrototypeOf
+alert(Object.prototype.isPrototypeOf(instance)); //true
+alert(SuperType.prototype.isPrototypeOf(instance)); //true
+alert(SubType.prototype.isPrototypeOf(instance)); //true
+</textarea>
+<h2>借用构造函数</h2>
+<textarea class="codemirror">
+这种技术的基本思想相当简单，即在子类型构造函数的内部调用超类型构造函数。
+
+function SuperType(){
+	this.colors = ["red", "blue", "green"]
+}
+function SubType(){
+	// 继承了 SuperType
+	SuperType.call(this);
+}
+var instance1 = new SubType();
+instance1.colors.push("black");
+alert(instance1.colors); //"red,blue,green,black"
+var instance2 = new SubType();
+alert(instance2.colors); //"red,blue,green"
+
+1.传递参数
+function SuperType(name){
+	this.name = name;
+}
+function SubType(){
+	//继承了 SuperType，同时还传递了参数
+	SuperType.call(this, "Nicholas");
+
+	//实例属性
+	this.age = 29;
+}
+var instance = new SubType();
+alert(instance.name); //"Nicholas";
+alert(instance.age); //29
+</textarea>
+
+
+<script src="../js/base.js"></script>
+</body>
+
+</html>
