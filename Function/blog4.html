@@ -132,15 +132,18 @@ alert(i); //10
 着该变量尚未声明。
 
 
-6.垃圾收集
+6.垃圾收集（高3 P78）
 JavaScript 具有自动垃圾收集机制，也就是说，执行环境会负责管理代码执行过程中使用的内存。
 这种垃圾收集机制的原理其实很简单：
 找出那些不再继续使用的变量，然后释放其占用的内存。
 为此，垃圾收集器会按照固定的时间间隔（或代码执行中预定的收集时间），周期性地执行这一操作。
 1）标记清除
-IE、Firefox、Opera、Chrome 和 Safari 的 JavaScript 实现使用的都是标记清除式的垃圾收集策略（或类似的策略），
+JavaScript 中最常用的垃圾收集方式是标记清除（mark-and-sweep）。
+2008年以后，IE、Firefox、Opera、Chrome 和 Safari 的 JavaScript 实现使用的都是标记清除式的垃圾收集策略（或类似的策略），
 只不过垃圾收集的时间间隔互有不同。
 2）引用计数
+另一种不太常见的垃圾收集策略叫做引用计数（reference counting）。
+1个严重的问题：
 循环引用指的是对象 A 中包含一个指向对象 B 的指针，而对象 B 中也包含一个指向对象 A 的引用。
 function problem(){
 	var objectA = new Object();
@@ -148,6 +151,26 @@ function problem(){
 	objectA.someOtherObject = objectB;
 	objectB.anotherObject = objectA;
 }
+IE 中有一部分对象并不是原生 JavaScript 对象。例如，其 BOM 和 DOM 中的对象就是
+使用 C++以 COM（Component Object Model，组件对象模型）对象的形式实现的，而 COM 对象的垃圾
+收集机制采用的就是引用计数策略。因此，只要在 IE 中涉及 COM 对象，就会存在循环引用的问题。
+
+为了避免类似这样的循环引用问题，最好是在不使用它们的时候手工断开原生 JavaScript 对象与
+DOM 元素之间的连接。如：
+objectA.someOtherObject = null;
+objectB.anotherObject = null;
+
+一旦数据不再有用，最好通过将其值设置为 null 来释放其引用——这个做法叫做解除引用（dereferencing）。
+这一做法适用于大多数全局变量和全局对象的属性。
+
+function createPerson(name){
+	var localPerson = new Object();
+	localPerson.name = name;
+	return localPerson;
+}
+var globalPerson = createPerson("Nicholas");
+// 手工解除 globalPerson 的引用
+globalPerson = null;
 </textarea>
 <h4>函数表达式的特征</h4>
 <textarea class="codemirror">
@@ -232,11 +255,162 @@ function createComparisonFunction(propertyName) {
 		}
 	};
 }
+var compare = createComparisonFunction("name");
+var result = compare({ name: "Nicholas" }, { name: "Greg" });
+//解除对匿名函数的引用（以便释放内存）
+compare = null;
 
 理解：
 即使这个内部函数被返回了，而且是在其他地方被调用了，但它仍然可以访问变量 propertyName。
 之所以还能够访问这个变量，是因为内部函数的作用域链中包含createComparisonFunction()的作用域。
+当 createComparisonFunction()函数返回后，其执行环境的作用域链会被销毁，但它的活动对象仍然会留在内存中；
+直到匿名函数被销毁后，createComparisonFunction()的活动对象才会被销毁。
+由于闭包会携带包含它的函数的作用域，因此会比其他函数占用更多的内存。</textarea>
+<img src="../img/function4.png" alt="">
+<h4>闭包与变量（高3 P181）</h4>
+<textarea class="codemirror">
+闭包只能取得包含函数中任何变量的最后一个值。闭包所保存的是整个变量对象，而不是某个特殊的变量。
+function createFunctions(){
+	var result = new Array();
+	for (var i=0; i < 10; i++){
+		result[i] = function(){
+			return i;
+		};
+	}
+	return result;
+}
+
+function createFunctions(){
+	var result = new Array();
+	for (var i=0; i < 10; i++){
+		result[i] = function(num){
+			return function(){
+				return num;
+			};
+		}(i);
+	}
+	return result;
+}
 </textarea>
+<h4>关于this对象</h4>
+<textarea class="codemirror">
+this 对象是在运行时基于函数的执行环境绑定的：
+在全局函数中，this 等于 window，
+而当函数被作为某个对象的方法调用时，this 等于那个对象。
+var name = "The Window";
+var object = {
+	name : "My Object",
+	getNameFunc : function(){
+		return function(){
+			return this.name;
+		};
+	}
+};
+alert(object.getNameFunc()()); //"The Window"（在非严格模式下）
+
+每个函数在被调用时都会自动取得两个特殊变量：this 和 arguments。
+内部函数在搜索这两个变量时，只会搜索到其活动对象为止，因此永远不可能直接访问外部函数中的这两个变量。
+不过，把外部作用域中的 this 对象保存在一个闭包能够访问到的变量里，就可以让闭包访问该对象了。
+
+var name = "The Window";
+var object = {
+	name : "My Object",
+	getNameFunc : function(){
+		var that = this;
+		return function(){
+			return that.name;
+		};
+	}
+};
+alert(object.getNameFunc()()); //"My Object"
+
+在几种特殊情况下，this 的值可能会意外地改变。
+var name = "The Window";
+var object = {
+	name : "My Object",
+	getName: function(){
+		return this.name;
+	}
+};
+object.getName(); //"My Object"
+(object.getName)(); //"My Object"
+(object.getName = object.getName)(); //"The Window"，在非严格模式下
+</textarea>
+<h4>内存泄漏（高3 P183）</h4>
+<textarea class="codemirror">
+function assignHandler(){
+	var element = document.getElementById("someElement");
+	element.onclick = function(){
+		alert(element.id);
+	};
+}
+由于匿名函数保存了一个对 assignHandler()的活动对象的引用，因此就会导致无法减少 element 的引用数。
+只要匿名函数存在，element 的引用数至少也是 1，因此它所占用的内存就永远不会被回收。改进如下：
+function assignHandler(){
+	var element = document.getElementById("someElement");
+	var id = element.id;
+
+	element.onclick = function(){
+		alert(id);
+	};
+
+	element = null;
+}
+闭包会引用包含函数的整个活动对象，而其中包含着 element。
+即使闭包不直接引用 element，包含函数的活动对象中也仍然会保存一个引用。因此，有必要把 element 变量设置为 null。
+这样就能够解除对 DOM 对象的引用，顺利地减少其引用数，确保正常回收其占用的内存。
+</textarea>
+<h4>模仿块级作用域</h4>
+<textarea class="codemirror">
+function outputNumbers(count){
+	for (var i=0; i < count; i++){
+		alert(i);
+	}
+
+	var i; //重新声明变量
+	alert(i); //计数
+}
+JavaScript 从来不会告诉你是否多次声明了同一个变量；遇到这种情况，它只会对后续的声明视而不
+见（不过，它会执行后续声明中的变量初始化）。匿名函数可以用来模仿块级作用域并避免这个问题。
+
+(function(){
+	//这里是块级作用域
+})();
+</textarea>
+<h4>私有变量、静态私有变量</h4>
+<textarea class="codemirror">
+任何在函数中定义的变量，都可以认为是私有变量，因为不能在函数的外部访问这些变量。
+私有变量包括函数的参数、局部变量和在函数内部定义的其他函数。
+
+function MyObject(){
+	//私有变量和私有函数
+	var privateVariable = 10;
+	function privateFunction(){
+		return false;
+	}
+	//特权方法
+	this.publicMethod = function (){
+		privateVariable++;
+		return privateFunction();
+	};
+}
+
+(function(){
+	//私有变量和私有函数
+	var privateVariable = 10;
+	function privateFunction(){
+		return false;
+	}
+	//构造函数
+	MyObject = function(){};
+	//公有/特权方法
+	MyObject.prototype.publicMethod = function(){
+		privateVariable++;
+		return privateFunction();
+	};
+})(); 
+</textarea>
+
 
 <script src="../js/base.js"></script>
 </body>
