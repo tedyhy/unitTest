@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>String</title>
+	<link rel="stylesheet" href="../codemirror/lib/codemirror.css">
+	<script src="../codemirror/lib/codemirror.js"></script>
+	<script src="../codemirror/mode/javascript/javascript.js"></script>
+	<script src="../codemirror/mode/xml/xml.js"></script>
+	<script src="../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<style type="text/css">
+		.CodeMirror {
+			height: auto;
+		}
+	</style>
+</head>
+
+<body>
+<h1>String</h1>
+<textarea class="codemirror">
+// 一下方法都不会影响原字符串
+1.创建字符串
+var stringObject = new String("hello world");
+var stringValue = "hello world";
+alert(stringValue.length); //"11"
+
+2.字符方法
+var stringValue = "hello world";
+1)charAt 获取字符
+alert(stringValue.charAt(1)); //"e"
+2)charCodeAt 获取字符编码
+alert(stringValue.charCodeAt(1)); //输出"101"
+// IE7- 使用这种语法，会返回undefined 值
+alert(stringValue[1]); //"e"
+
+3.字符串操作方法
+1)concat
+var stringValue = "hello ";
+var result = stringValue.concat("world");
+alert(result); //"hello world"
+alert(stringValue); //"hello"
+
+一般用 join、'+' 连接字符串。
+
+2)slice()、substring() 和 substr()
+slice() 和 substring()的第二个参数指定的是子字符串最后一个字符后面的位置。
+而substr()的第二个参数指定的则是返回的字符个数。
+第一个参数都是从 0 开始的索引。
+如果没有给这些方法传递第二个参数，则将字符串的长度作为结束位置。
+
+var stringValue = "hello world";
+alert(stringValue.slice(3)); //"lo world"
+alert(stringValue.substring(3)); //"lo world"
+alert(stringValue.substr(3)); //"lo world"
+
+alert(stringValue.slice(3, 7)); //"lo w"
+alert(stringValue.substring(3,7)); //"lo w"
+alert(stringValue.substr(3, 7)); //"lo worl"
+
+在传递给这些方法的参数是负值的情况下：
+slice() 方法会将传入的负值与字符串的长度相加。
+substring() 方法会把所有负值参数都转换为 0 。
+substr() 方法将负的第一个参数加上字符串的长度，而将负的第二个参数转换为0。
+
+var stringValue = "hello world";
+alert(stringValue.slice(-3)); //"rld"
+alert(stringValue.substring(-3)); //"hello world"
+alert(stringValue.substr(-3)); //"rld"
+
+alert(stringValue.slice(3, -4)); //"lo w"
+// substring()方法会把第二个参数转换为0，使调用变成了substring(3,0)，而由于这个方法会将较小的数作为开始位置，
+// 将较大的数作为结束位置，因此最终相当于调用了substring(0,3)。
+alert(stringValue.substring(3, -4)); //"hel"
+// IE8- 中向substr()方法传递负值的情况时存在问题，它会返回原始的字符串。
+alert(stringValue.substr(3, -4)); //""（空字符串）
+
+
+4.字符串位置方法
+indexOf() 和 lastIndexOf()
+这两个方法都是从一个字符串中搜索给定的子字符串，然后返子字符串的位置（如果没有找到该子字符串，则返回-1）。
+这两个方法都可以接收可选的第二个参数，表示从字符串中的哪个位置开始搜索。
+var stringValue = "hello world";
+alert(stringValue.indexOf("o")); //4
+alert(stringValue.lastIndexOf("o")); //7
+
+var stringValue = "hello world";
+alert(stringValue.indexOf("o", 6)); //7
+alert(stringValue.lastIndexOf("o", 6)); //4
+
+--------------
+
+var stringValue = "Lorem ipsum dolor sit amet, consectetur adipisicing elit";
+var positions = [];
+var pos = stringValue.indexOf("e");
+while(pos > -1) {
+	positions.push(pos);
+	pos = stringValue.indexOf("e", pos + 1);
+}
+alert(positions); //"3,24,32,35,52"
+
+
+5.trim() （ecma262v5中方法）
+var stringValue = " hello world ";
+var trimmedStringValue = stringValue.trim();
+alert(stringValue); //" hello world "
+alert(trimmedStringValue); //"hello world"
+
+
+6.字符串大小写转换方法
+涉及字符串大小写转换的方法有4 个：toLowerCase()、toLocaleLowerCase()、toUpperCase() 和 toLocaleUpperCase()。
+var stringValue = "hello world";
+alert(stringValue.toLocaleUpperCase()); //"HELLO WORLD"
+alert(stringValue.toUpperCase()); //"HELLO WORLD"
+alert(stringValue.toLocaleLowerCase()); //"hello world"
+alert(stringValue.toLowerCase()); //"hello world"
+
+
+
+</textarea>
+
+<script src="../js/base.js"></script>
+</body>
+
+</html>
