@@ -114,8 +114,79 @@ alert(stringValue.toUpperCase()); //"HELLO WORLD"
 alert(stringValue.toLocaleLowerCase()); //"hello world"
 alert(stringValue.toLowerCase()); //"hello world"
 
+7.字符串的模式匹配方法
+1)match()
+只接受一个参数，要么是一个正则表达式，要么是一个RegExp 对象。
 
+var text = "cat, bat, sat, fat";
+var pattern = /(.)at/;
+// 与pattern.exec(text)相同
+// 数组的第一项是与整个模式匹配的字符串，之后的每一项（如果有）保存着与正则表达式中的捕获组匹配的字符串。
+// ["cat", "c"]
+var matches = text.match(pattern);
+alert(matches.index); //0
+alert(matches[0]); //"cat"
+alert(pattern.lastIndex); //0
 
+2)search()
+这个方法的唯一参数与match()方法的参数相同：
+由字符串或RegExp 对象指定的一个正则表达式。search()方法返回字符串中第一个匹配项的索引。
+
+3)replace()
+var text = "cat, bat, sat, fat";
+var result = text.replace("at", "ond");
+alert(result); //"cond, bat, sat, fat"
+result = text.replace(/at/g, "ond");
+aler t(result); //"cond, bond, sond, fond"
+var text = "cat, bat, sat, fat";
+result = text.replace(/(.at)/g, "word ($1)");
+alert(result); //word (cat), word (bat), word (sat), word (fat)
+
+replace()方法的第二个参数也可以是一个函数。在只有一个匹配项（即与模式匹配的字符串）的
+情况下，会向这个函数传递3 个参数：模式的匹配项、模式匹配项在字符串中的位置和原始字符串。
+在正则表达式中定义了多个捕获组的情况下，传递给函数的参数依次是模式的匹配项、第一个捕获组的匹
+配项、第二个捕获组的匹配项……，但最后两个参数仍然分别是模式的匹配项在字符串中的位置和原始字符串。
+这个函数应该返回一个字符串，表示应该被替换的匹配项使用函数作为replace()方法的第二个参数可以实现更加精细的替换操作。
+function htmlEscape(text){
+	return text.replace(/[<>"&]/g, function(match, pos, originalText){
+		switch(match){
+			case "<":
+				return "&lt;";
+			case ">":
+				return "&gt;";
+			case "&":
+				return "&amp;";
+			case "\"":
+				return "&quot;";
+		}
+	});
+}
+alert(htmlEscape("<p class=\"greeting\">Hello world!</p>"));
+//&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+
+4)split()
+第一个参数（分隔符）可以是字符串，也可以是一个RegExp 对象（这个方法不会将字符串看成正则表达式）。
+第二个参数，用于指定数组的大小，以便确保返回的数组不会超过既定大小。
+var colorText = "red,blue,green,yellow";
+var colors1 = colorText.split(","); //["red", "blue", "green", "yellow"]
+var colors2 = colorText.split(",", 2); //["red", "blue"]
+var colors3 = colorText.split(/[^\,]+/); //["", ",", ",", ",", ""]
+
+注意：
+对split()中正则表达式的支持因浏览器而异。尽管对于简单的模式没有什么差别，但对于未发现
+匹配项以及带有捕获组的模式，匹配的行为就不大相同了。以下是几种常见的差别。
+·IE8 及之前版本会忽略捕获组。ECMA-262 规定应该把捕获组拼接到结果数组中。
+IE9 能正确地在结果中包含捕获组。
+·Firefox 3.6 及之前版本在捕获组未找到匹配项时，会在结果数组中包含空字符串；
+ECMA-262 规定没有匹配项的捕获组在结果数组中应该用undefined 表示。
+
+5)fromCharCode()
+String 构造函数本身还有一个静态方法：fromCharCode()。
+这个方法与实例方法charCodeAt()执行的是相反的操作。
+
+console.log('abc'.charAt(0)); // 'a'
+console.log('abc'.charCodeAt(0)); // '97'
+console.log(String.fromCharCode(104, 101, 108, 108, 111)); // 'hello'
 </textarea>
 
 <script src="../js/base.js"></script>
